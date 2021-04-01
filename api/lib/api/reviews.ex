@@ -37,6 +37,14 @@ defmodule Api.Reviews do
   """
   def get_review!(id), do: Repo.get!(Review, id)
 
+  # Load the space this review belongs to along with the average rating
+  def load_review(%Review{} = review) do
+    review = Repo.preload(review, :space)
+    space = Api.Spaces.get_space(review.space_id)
+    review = Map.replace(review, :space, space)
+    review
+  end
+
   @doc """
   Creates a review.
 
@@ -52,7 +60,10 @@ defmodule Api.Reviews do
   def create_review(attrs \\ %{}) do
     %Review{}
     |> Review.changeset(attrs)
-    |> Repo.insert()
+    |> Repo.insert(
+      on_conflict: :replace_all,
+      conflict_target: [:user_id, :space_id]
+    )
   end
 
   @doc """

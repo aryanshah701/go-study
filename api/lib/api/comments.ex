@@ -35,7 +35,36 @@ defmodule Api.Comments do
       ** (Ecto.NoResultsError)
 
   """
-  def get_comment!(id), do: Repo.get!(Comment, id)
+  def get_comment!(id) do
+    # Return the comment with the space having the virtual fields
+    comment = Repo.get!(Comment, id)
+    |> Repo.preload(:user)
+    |> Repo.preload(:space)
+
+    space = Api.Spaces.get_space(comment.space_id)
+    comment = Map.replace(comment, :space, space)
+    
+    comment
+  end
+
+  def get_comment(id) do
+    comment = Repo.get(Comment, id)
+    |> Repo.preload(:user)
+    |> Repo.preload(:event)
+
+    space = Api.Spaces.get_space(comment.space_id)
+    comment = Map.replace(comment, :space, space)
+    
+    comment
+  end
+
+  def preload(comment) do
+    comment = comment 
+    |> Repo.preload(comment, :space)
+    |> Repo.preload(comment, :user)
+
+    comment
+  end
 
   @doc """
   Creates a comment.

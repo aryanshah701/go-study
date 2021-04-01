@@ -35,7 +35,45 @@ defmodule Api.Spaces do
       ** (Ecto.NoResultsError)
 
   """
-  def get_space!(id), do: Repo.get!(Space, id)
+  def get_space!(id) do
+    space = Repo.get(Space, id)
+    if space do
+      # Preload spaces
+      space = space 
+      |> Repo.preload(:comments)
+      |> Repo.preload(:reviews)
+      |> Repo.preload(:user)
+      |> load_stats()
+
+      space  
+    end
+  end
+
+  def get_space(id) do
+    space = Repo.get(Space, id)
+    if space do
+      # Preload spaces
+      space = space 
+      |> Repo.preload(:comments)
+      |> Repo.preload(:reviews)
+      |> Repo.preload(:user)
+      |> load_stats()
+
+      space  
+    end
+  end
+
+  # Load the event's stats(virtual fields)
+  def load_stats(space) do
+    # Compute the average rating of the event
+    reviews = space.reviews
+    num_reviews = Enum.count(reviews)
+    total_rating = Enum.reduce(reviews, 0.0, fn review, acc -> review.rating + acc end)
+    avg_rating = total_rating/num_reviews
+    space = Map.replace(space, :avg_rating, avg_rating)
+
+    space
+  end
 
   @doc """
   Creates a space.
