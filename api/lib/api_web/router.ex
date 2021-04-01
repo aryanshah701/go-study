@@ -22,6 +22,12 @@ defmodule ApiWeb.Router do
   # Other scopes may use custom stacks.
   scope "/api/v1", ApiWeb do
     pipe_through :api
+
+    resources "/users", UserController, except: [:new, :edit]
+    resources "/spaces", SpaceController, except: [:new, :edit]
+    resources "/reviews", ReviewController, except: [:new, :edit]
+    resources "/comments", CommentController, except: [:new, :edit]
+    resources "/session", SessionController, only: [:create]
   end
 
   # Enables LiveDashboard only for development
