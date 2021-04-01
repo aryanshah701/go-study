@@ -26,6 +26,7 @@ defmodule ApiWeb.Router do
     resources "/users", UserController, except: [:new, :edit]
     resources "/spaces", SpaceController, except: [:new, :edit]
     resources "/reviews", ReviewController, except: [:new, :edit]
+    resources "/comments", CommentController, except: [:new, :edit]
   end
 
   # Enables LiveDashboard only for development
