@@ -6,6 +6,8 @@ defmodule ApiWeb.UserController do
 
   action_fallback ApiWeb.FallbackController
 
+  plug ApiWeb.Plugs.RequireAuth, "en" when action in [:index, :show, :update, :delete]
+
   def index(conn, _params) do
     users = Users.list_users()
     render(conn, "index.json", users: users)

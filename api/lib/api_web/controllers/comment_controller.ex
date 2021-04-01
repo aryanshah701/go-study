@@ -6,6 +6,8 @@ defmodule ApiWeb.CommentController do
 
   action_fallback ApiWeb.FallbackController
 
+  plug ApiWeb.Plugs.RequireAuth, "en" when action in [:create, :update, :delete]
+
   def index(conn, _params) do
     comments = Comments.list_comments()
     render(conn, "index.json", comments: comments)

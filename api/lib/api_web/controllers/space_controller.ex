@@ -6,6 +6,8 @@ defmodule ApiWeb.SpaceController do
 
   action_fallback ApiWeb.FallbackController
 
+  plug ApiWeb.Plugs.RequireAuth, "en" when action in [:create, :update, :delete]
+
   def index(conn, _params) do
     spaces = Spaces.list_spaces()
     render(conn, "index.json", spaces: spaces)

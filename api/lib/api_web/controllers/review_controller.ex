@@ -6,6 +6,8 @@ defmodule ApiWeb.ReviewController do
 
   action_fallback ApiWeb.FallbackController
 
+  plug ApiWeb.Plugs.RequireAuth, "en" when action in [:create, :update, :delete]
+
   def index(conn, _params) do
     reviews = Reviews.list_reviews()
     render(conn, "index.json", reviews: reviews)
