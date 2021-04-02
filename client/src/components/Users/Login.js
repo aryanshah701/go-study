@@ -27,6 +27,7 @@ function LoginUser() {
         const successFetch = fetchUserData();
 
         if (successFetch) {
+          console.log("Login Success")
           history.push("/");
         } else {
           history.push("/login");
