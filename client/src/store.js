@@ -74,10 +74,8 @@ function error(state = "", action) {
 function success(state = "", action) {
   switch (action.type) {
     case "success/set":
-      console.log("Setting success");
       return action.data;
     default:
-      console.log("Removing success");
       return null;
   }
 }
