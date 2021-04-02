@@ -77,6 +77,50 @@ export async function apiLogin(email, password) {
   }
 }
 
+// Registers a new user
+export async function apiRegister(newUser) {
+  try {
+    const response = await postRequest("/users", { user: newUser });
+    if (response.data) {
+      // Registeration was successful
+      return true;
+    } else {
+      // If the registeration is not successful, dispatch an error
+      const err = getRegisterationError(response);
+
+      if (err !== "") {
+        const errorAction = {
+          data: err,
+          type: "error/set",
+        };
+
+        store.dispatch(errorAction);
+      }
+
+      return false;
+    }
+  } catch (err) {
+    console.log("err", err)
+    return false;
+  }
+}
+
+// Generate an error string from the response object
+function getRegisterationError(response) {
+  if (response.errors) {
+    const errors = response.errors;
+    if (errors.email) {
+      return "Email: " + errors.email[0];
+    }
+
+    if (errors.password) {
+      return "Password: " + errors.password[0];
+    }
+
+    return "";
+  }
+}
+
 // --------------------- GET REQUESTS -------------------------------
 // Fetches data from the API given the endpoint
 async function getRequest(endpoint, token) {

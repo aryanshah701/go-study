@@ -7,6 +7,7 @@ import { Switch, Route } from 'react-router-dom';
 import NavBar from './components/Nav';
 import Feed from './components/Feed';
 import Login from './components/Users/Login';
+import NewUser from './components/Users/New'
 
 function App() {
   return (
@@ -22,6 +23,9 @@ function App() {
         </Route>
         <Route path="/login" exact>
           <Login />
+        </Route>
+        <Route path="/users/new" exact>
+          <NewUser />
         </Route>
       </Switch>
     </Container>
