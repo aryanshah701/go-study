@@ -37,14 +37,14 @@ defmodule Api.Users do
   """
   def get_user!(id) do 
     user = Repo.get!(User, id)
-    user = Repo.preload(user, :events)
+    user = Repo.preload(user, :spaces)
     user = Repo.preload(user, :comments)
     user
   end
 
   def get_user(id) do
     user = Repo.get(User, id)
-    user = Repo.preload(user, :events)
+    user = Repo.preload(user, :spaces)
     user = Repo.preload(user, :comments)
     user
   end
@@ -52,14 +52,14 @@ defmodule Api.Users do
   # Gets a user by email, if not found returns nil
   def get_user_by_email(email) do
     user = Repo.get_by(User, email: email)
-    user = Repo.preload(user, :events)
+    user = Repo.preload(user, :spaces)
     user = Repo.preload(user, :comments)
     user
   end
 
   # Preloads a user
   def preload(user) do
-    user = Repo.preload(user, :events)
+    user = Repo.preload(user, :spaces)
     user = Repo.preload(user, :comments)
     user
   end

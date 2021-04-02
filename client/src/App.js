@@ -6,6 +6,7 @@ import {Container, Row, Col} from 'react-bootstrap';
 import { Switch, Route } from 'react-router-dom';
 import NavBar from './components/Nav';
 import Feed from './components/Feed';
+import Login from './components/Users/Login';
 
 function App() {
   return (
@@ -18,6 +19,9 @@ function App() {
       <Switch>
         <Route path="/" exact>
           <Feed />
+        </Route>
+        <Route path="/login" exact>
+          <Login />
         </Route>
       </Switch>
     </Container>

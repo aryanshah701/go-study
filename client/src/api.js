@@ -6,7 +6,25 @@ const apiUrl =
     ? "http://gostudy-api.aryanshah.tech/api/v1"
     : "http://localhost:4000/api/v1";
 
+// ---------------------- HELPER FUNCTIONS -------------------------
+// Checks if a user is logged in, if not dispatches an error
+function isLoggedIn(session) {
+  // If the user is not logged in, dispatch error
+  if (!session) {
+    const errorAction = {
+      type: "error/set",
+      data: "Sorry you need to be logged in for this.",
+    };
+
+    store.dispatch(errorAction);
+    return false;
+  }
+
+  return true;
+}
+
 // ---------------------- POST REQUESTS ----------------------------
+// Sends a post request
 async function postRequest(endpoint, body, token = "") {
   const options = {
     method: "POST",
@@ -22,7 +40,45 @@ async function postRequest(endpoint, body, token = "") {
   return await response.json();
 }
 
+// Authenticate the user and recieve the session token
+export async function apiLogin(email, password) {
+  // Make the POST request to create a session
+  const response = await postRequest("/session", {
+    email: email,
+    password: password,
+  })
+  
+  if (response.session) {
+    // If the authentication is successful, dispatch the session
+    const sessionAction = {
+      data: response.session,
+      type: "session/set",
+    };
+
+    const successAction = {
+      data: "Login successful",
+      type: "success/set",
+    };
+
+    store.dispatch(sessionAction);
+    store.dispatch(successAction);
+
+    return true;
+  } else {
+    // If the authentication is not successful, dispatch the an error
+    const errorAction = {
+      data: response.error,
+      type: "error/set",
+    };
+
+    store.dispatch(errorAction);
+
+    return false;
+  }
+}
+
 // --------------------- GET REQUESTS -------------------------------
+// Fetches data from the API given the endpoint
 async function getRequest(endpoint, token) {
   const options = {
     method: "GET",
@@ -34,4 +90,37 @@ async function getRequest(endpoint, token) {
   const repsonse = await fetch(apiUrl + endpoint, options);
 
   return await repsonse.json();
+}
+
+// Fetch all user data and dispatch it to the store
+export function fetchUserData() {
+  const state = store.getState();
+  const session = state.session;
+
+  // If the user is not logged in, dispatch error
+  if (!isLoggedIn(session)) {
+    return false;
+  }
+
+  const userId = session.id;
+  const token = session.token;
+
+  // Make the get request and dispatch the data if successful
+  const isSuccess = getRequest("/users/" + userId, token)
+    .then((userData) => {
+      const action = {
+        type: "user/set",
+        data: userData,
+      };
+
+      store.dispatch(action);
+
+      return true;
+    })
+    .catch((err) => {
+      console.log("err", err);
+      return false;
+    });
+
+  return isSuccess;
 }
