@@ -1,6 +1,7 @@
 import { Nav, Row, Col, Alert } from "react-bootstrap";
-import { NavLink } from "react-router-dom";
+import { NavLink, useHistory } from "react-router-dom";
 import { connect } from "react-redux";
+import store from '../store';
 
 // Navbar component
 function NavBar(props) {
@@ -78,7 +79,7 @@ const NavInfo = connect(stateToProps)(({ session }) => {
         <LogoutButton />
         <Nav.Item>
           <NavLink to={eventNewPath} className="nav-link">
-            Create New Event
+            Create New Study Space
           </NavLink>
         </Nav.Item>
       </Row>
@@ -88,8 +89,21 @@ const NavInfo = connect(stateToProps)(({ session }) => {
 
 // Logout functionality
 const LogoutButton = connect()(({ dispatch }) => {
+  const history = useHistory();
   function logoutUser() {
-    console.log("Logout");
+     const successAction = {
+       data: "Logout successfull",
+       type: "success/set",
+     };
+
+     // Logout
+     dispatch({ type: "session/logout" });
+
+     // Dispatch success message
+     store.dispatch(successAction);
+
+     // Redirect to Login page
+     history.push("/");
   }
 
   return (

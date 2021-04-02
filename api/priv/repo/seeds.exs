@@ -1,11 +1,17 @@
-# Script for populating the database. You can run it as:
-#
-#     mix run priv/repo/seeds.exs
-#
-# Inside the script, you can read and write to any of your
-# repositories directly:
-#
-#     Api.Repo.insert!(%Api.SomeSchema{})
-#
-# We recommend using the bang functions (`insert!`, `update!`
-# and so on) as they will fail if something goes wrong.
+alias Api.Repo
+alias Api.Users.User
+alias Api.Spaces.Spaces
+
+# Seeding users
+user1 = Repo.insert!(%User{
+  name: "user1", email: "user1@gmail.com", password_hash: Argon2.hash_pwd_salt("user1234")
+})
+
+user2 = Repo.insert!(%User{
+  name: "user2", email: "user2@gmail.com", password_hash: Argon2.hash_pwd_salt("user1234")
+})
+
+user3 = Repo.insert!(%User{
+  name: "user3", email: "user3@gmail.com", password_hash: Argon2.hash_pwd_salt("user1234")
+})
+
