@@ -1,13 +1,14 @@
 // Styles and Bootstrap
-import './App.scss';
-import {Container, Row, Col} from 'react-bootstrap';
+import "./App.scss";
+import { Container, Row, Col } from "react-bootstrap";
 
 // React router and components
-import { Switch, Route } from 'react-router-dom';
-import NavBar from './components/Nav';
-import Feed from './components/Feed';
-import Login from './components/Users/Login';
-import NewUser from './components/Users/New'
+import { Switch, Route } from "react-router-dom";
+import NavBar from "./components/Nav";
+import Feed from "./components/Feed";
+import Login from "./components/Users/Login";
+import NewUser from "./components/Users/New";
+import NewSpace from "./components/Spaces/New";
 
 function App() {
   return (
@@ -26,6 +27,9 @@ function App() {
         </Route>
         <Route path="/users/new" exact>
           <NewUser />
+        </Route>
+        <Route path="/spaces/new" exact>
+          <NewSpace />
         </Route>
       </Switch>
     </Container>
