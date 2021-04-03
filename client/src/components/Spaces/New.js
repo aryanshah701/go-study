@@ -116,8 +116,16 @@ function SearchForm(props) {
     // Ensure that the spaces object is valid
     if (spaceObjectHasRequiredFields(space)) {
       // Check user inputed fields
+
       // Add user inputed fields to object
+      const completeSpace = {
+        ...space,
+        wifi: userInput.hasWifi,
+        description: userInput.description,
+      };
+
       // Make the POST request to create the space
+      console.log("Final space: ", completeSpace);
     }
   }, [space]);
 
@@ -161,13 +169,14 @@ function SearchForm(props) {
       return;
     }
 
+    console.log("Place: ", place);
     setSpace({
       name: place.name,
       address: place.formatted_address,
       google_rating: place.rating,
       photo: place.photos[0].getUrl(),
       opening_hours: place.opening_hours.weekday_text,
-      type: place.type,
+      type: place.types[0],
       website: place.website,
     });
 
