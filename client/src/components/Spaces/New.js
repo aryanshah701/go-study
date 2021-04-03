@@ -174,6 +174,9 @@ function SearchForm(props) {
     return place;
   }
 
+  // Handle any error from the google autocomplete component
+  function handleAutocompleteError(err) {}
+
   // Google Places autocomplete and controlled form
   return (
     <Row>
@@ -184,9 +187,7 @@ function SearchForm(props) {
             <Row>
               <Col>
                 <GooglePlacesAutocomplete
-                  onLoadFailed={(error) =>
-                    console.error("Error with the google script: ", error)
-                  }
+                  onLoadFailed={handleAutocompleteError}
                   selectProps={{
                     searchedSpace,
                     onChange: setSearchedSpace,
@@ -208,11 +209,29 @@ function SearchForm(props) {
 
           <Form.Group controlId="testArea">
             <Form.Label>Description</Form.Label>
-            <Form.Control as="textarea" rows={3} />
+            <Form.Control
+              as="textarea"
+              rows={3}
+              value={userInput.description}
+              onChange={(ev) => {
+                setUserInput({ ...userInput, description: ev.target.value });
+              }}
+            />
           </Form.Group>
 
           <Form.Group controlId="wifi">
-            <Form.Check type="checkbox" label="Free Public Wifi?" />
+            <Form.Check
+              type="checkbox"
+              label="Free Public Wifi?"
+              checked={userInput.hasWifi}
+              onChange={(ev) => {
+                console.log(ev.target.value);
+                setUserInput({
+                  ...userInput,
+                  hasWifi: ev.target.checked,
+                });
+              }}
+            />
           </Form.Group>
 
           <Button onClick={getDetailsFromPlacesAPI}>Create Space!</Button>
