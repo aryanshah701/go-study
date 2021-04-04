@@ -14,7 +14,11 @@ defmodule ApiWeb.SpaceController do
   end
 
   def create(conn, %{"space" => space_params}) do
+    # Add user id
+    user_id = conn.assigns[:user].id
+    space_params = Map.put(space_params, "user_id", user_id)
     with {:ok, %Space{} = space} <- Spaces.create_space(space_params) do
+      space = Spaces.get_space(space.id)
       conn
       |> put_status(:created)
       |> put_resp_header("location", Routes.space_path(conn, :show, space))

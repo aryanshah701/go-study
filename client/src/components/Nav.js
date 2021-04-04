@@ -1,7 +1,7 @@
 import { Nav, Row, Col, Alert } from "react-bootstrap";
 import { NavLink, useHistory } from "react-router-dom";
 import { connect } from "react-redux";
-import store from '../store';
+import store from "../store";
 
 // Navbar component
 function NavBar(props) {
@@ -63,7 +63,7 @@ const NavInfo = connect(stateToProps)(({ session }) => {
     );
   } else {
     const userShowPath = "/users/show";
-    const eventNewPath = "/events/new";
+    const eventNewPath = "/spaces/new";
     return (
       <Row>
         <Nav.Item>
@@ -91,19 +91,19 @@ const NavInfo = connect(stateToProps)(({ session }) => {
 const LogoutButton = connect()(({ dispatch }) => {
   const history = useHistory();
   function logoutUser() {
-     const successAction = {
-       data: "Logout successfull",
-       type: "success/set",
-     };
+    const successAction = {
+      data: "Logout successfull",
+      type: "success/set",
+    };
 
-     // Logout
-     dispatch({ type: "session/logout" });
+    // Logout
+    dispatch({ type: "session/logout" });
 
-     // Dispatch success message
-     store.dispatch(successAction);
+    // Dispatch success message
+    store.dispatch(successAction);
 
-     // Redirect to Login page
-     history.push("/");
+    // Redirect to Login page
+    history.push("/");
   }
 
   return (
