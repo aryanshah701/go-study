@@ -9,6 +9,7 @@ import Feed from "./components/Feed";
 import Login from "./components/Users/Login";
 import NewUser from "./components/Users/New";
 import NewSpace from "./components/Spaces/New";
+import ShowSpace from "./components/Spaces/Show";
 
 function App() {
   return (
@@ -30,6 +31,9 @@ function App() {
         </Route>
         <Route path="/spaces/new" exact>
           <NewSpace />
+        </Route>
+        <Route path="/spaces/:id" exact>
+          <ShowSpace />
         </Route>
       </Switch>
     </Container>
