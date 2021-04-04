@@ -17,7 +17,6 @@ defmodule ApiWeb.SpaceController do
     # Add user id
     user_id = conn.assigns[:user].id
     space_params = Map.put(space_params, "user_id", user_id)
-
     with {:ok, %Space{} = space} <- Spaces.create_space(space_params) do
       space = Spaces.get_space(space.id)
       conn

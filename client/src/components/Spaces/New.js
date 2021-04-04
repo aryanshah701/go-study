@@ -144,13 +144,14 @@ function SearchForm(props) {
 
       // Make the POST request to create the space
       console.log("Final space: ", completeSpace);
-      apiCreateSpace(completeSpace).then((success) => {
+      apiCreateSpace(completeSpace).then((response) => {
         // If successful creation
-        if (success) {
-          console.log("New space should have been created successfuly");
-        } else {
-          console.log("Something went wrong creating the space");
-        }
+        // if (success) {
+        //   console.log("New space should have been created successfuly");
+        // } else {
+        //   console.log("Something went wrong creating the space");
+        // }
+        console.log("Response: ", response);
       });
     }
   }, [space, userInput]);
@@ -173,6 +174,7 @@ function SearchForm(props) {
         "website",
         "opening_hours",
         "rating",
+        "geometry",
       ],
     };
 
@@ -199,6 +201,8 @@ function SearchForm(props) {
       opening_hours: place.opening_hours.weekday_text,
       type: place.types[0],
       website: place.website,
+      latitude: place.geometry.location.lat(),
+      longitude: place.geometry.location.lng(),
     });
 
     return place;

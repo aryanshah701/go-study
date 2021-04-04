@@ -133,7 +133,7 @@ export async function apiCreateSpace(space) {
 
   const token = session.token;
 
-  const response = await postRequest("/spaces/new", space, token);
+  const response = await postRequest("/spaces", { space: space }, token);
 
   // If there the Space was successfuly created dispatch a success message
   if (response.data) {
@@ -144,7 +144,7 @@ export async function apiCreateSpace(space) {
 
     store.dispatch(successAction);
 
-    return true;
+    return response.data;
   }
 
   // Else, dispatch an error
@@ -155,7 +155,7 @@ export async function apiCreateSpace(space) {
 
   store.dispatch(errorAction);
 
-  return false;
+  return response.errors;
 }
 
 // --------------------- GET REQUESTS -------------------------------

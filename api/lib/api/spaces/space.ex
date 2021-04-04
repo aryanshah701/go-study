@@ -5,8 +5,8 @@ defmodule Api.Spaces.Space do
   schema "spaces" do
     # Actual fields
     field :description, :string
-    field :latitude, :string
-    field :longitude, :string
+    field :latitude, :float
+    field :longitude, :float
     field :name, :string
     field :wifi, :boolean, default: false
     field :address, :string
