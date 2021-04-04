@@ -70,10 +70,17 @@ defmodule Api.Spaces do
     reviews = space.reviews
     num_reviews = Enum.count(reviews)
     total_rating = Enum.reduce(reviews, 0.0, fn review, acc -> review.rating + acc end)
-    avg_rating = total_rating/num_reviews
-    space = Map.replace(space, :avg_rating, avg_rating)
+    IO.inspect num_reviews
+    IO.inspect total_rating
 
-    space
+    if num_reviews == 0 do
+      space = Map.replace(space, :avg_rating, 0)
+      space 
+    else
+      avg_rating = total_rating/num_reviews
+      space = Map.replace(space, :avg_rating, avg_rating)
+      space
+    end
   end
 
   @doc """
