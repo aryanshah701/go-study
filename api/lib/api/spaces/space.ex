@@ -9,6 +9,12 @@ defmodule Api.Spaces.Space do
     field :longitude, :string
     field :name, :string
     field :wifi, :boolean, default: false
+    field :address, :string
+    field :google_rating, :float, default: 0.0
+    field :opening_hours, {:array, :string}
+    field :photo, :string, default: ""
+    field :type, :string, default: ""
+    field :website, :string, default: ""
 
     # Virtual fields
     field :avg_rating, :float, virtual: true
@@ -24,7 +30,9 @@ defmodule Api.Spaces.Space do
   @doc false
   def changeset(space, attrs) do
     space
-    |> cast(attrs, [:name, :description, :latitude, :longitude, :wifi, :user_id])
-    |> validate_required([:name, :description, :latitude, :longitude, :wifi, :user_id])
+    |> cast(attrs, [:name, :description, :latitude, :longitude, :wifi, 
+      :user_id, :address, :google_rating, :opening_hours, :photo, :type, :website])
+    |> validate_required([:name, :description, :latitude, :longitude, :wifi, 
+      :user_id, :address, :google_rating, :opening_hours, :photo, :type, :website])
   end
 end
