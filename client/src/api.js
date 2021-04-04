@@ -46,8 +46,8 @@ export async function apiLogin(email, password) {
   const response = await postRequest("/session", {
     email: email,
     password: password,
-  })
-  
+  });
+
   if (response.session) {
     // If the authentication is successful, dispatch the session
     const sessionAction = {
@@ -100,7 +100,7 @@ export async function apiRegister(newUser) {
       return false;
     }
   } catch (err) {
-    console.log("err", err)
+    console.log("err", err);
     return false;
   }
 }
@@ -119,6 +119,43 @@ function getRegisterationError(response) {
 
     return "";
   }
+}
+
+// Creates a new Space
+export async function apiCreateSpace(space) {
+  const state = store.getState();
+  const session = state.session;
+
+  // If the user is not logged in, dispatch error
+  if (!isLoggedIn(session)) {
+    return false;
+  }
+
+  const token = session.token;
+
+  const response = await postRequest("/spaces/new", space, token);
+
+  // If there the Space was successfuly created dispatch a success message
+  if (response.data) {
+    const successAction = {
+      type: "success/set",
+      data: "New space created successfully!",
+    };
+
+    store.dispatch(successAction);
+
+    return true;
+  }
+
+  // Else, dispatch an error
+  const errorAction = {
+    type: "error/set",
+    data: "Something went wrong when creating the Space",
+  };
+
+  store.dispatch(errorAction);
+
+  return false;
 }
 
 // --------------------- GET REQUESTS -------------------------------

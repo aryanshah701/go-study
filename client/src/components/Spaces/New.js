@@ -1,6 +1,7 @@
 import { Row, Col, Form, Alert, Button } from "react-bootstrap";
 import { useState, useEffect } from "react";
 import GooglePlacesAutocomplete from "react-google-places-autocomplete";
+import { apiCreateSpace } from "../../api";
 
 // Search radius in miles
 const RADIUS = 10;
@@ -17,6 +18,12 @@ function NewSpace() {
 
   // State for the space to create
   const [space, setSpace] = useState(null);
+
+  // State for controlled user input form
+  const [userInput, setUserInput] = useState({
+    description: "",
+    hasWifi: false,
+  });
 
   // Function to set the user's location as state
   function setLocation(position) {
@@ -95,6 +102,8 @@ function NewSpace() {
           setSearchedSpace={setSearchedSpace}
           space={space}
           setSpace={setSpace}
+          userInput={userInput}
+          setUserInput={setUserInput}
         />
       </Col>
     </Row>
@@ -103,11 +112,15 @@ function NewSpace() {
 
 // Form for the google places autocomplete search
 function SearchForm(props) {
-  const { position, searchedSpace, setSearchedSpace, space, setSpace } = props;
-  const [userInput, setUserInput] = useState({
-    description: "",
-    hasWifi: false,
-  });
+  const {
+    position,
+    searchedSpace,
+    setSearchedSpace,
+    space,
+    setSpace,
+    userInput,
+    setUserInput,
+  } = props;
 
   // Create the new Space when the space object has been set
   useEffect(() => {
@@ -116,6 +129,11 @@ function SearchForm(props) {
     // Ensure that the spaces object is valid
     if (spaceObjectHasRequiredFields(space)) {
       // Check user inputed fields
+      if (!isUserInputValid(userInput)) {
+        // Handle error
+        console.log("Handle user input error");
+        return;
+      }
 
       // Add user inputed fields to object
       const completeSpace = {
@@ -126,13 +144,16 @@ function SearchForm(props) {
 
       // Make the POST request to create the space
       console.log("Final space: ", completeSpace);
+      apiCreateSpace(completeSpace).then((success) => {
+        // If successful creation
+        if (success) {
+          console.log("New space should have been created successfuly");
+        } else {
+          console.log("Something went wrong creating the space");
+        }
+      });
     }
-  }, [space]);
-
-  // Ensures that the space object has all required fields after a getDetails call
-  function spaceObjectHasRequiredFields(space) {
-    return space && space.name;
-  }
+  }, [space, userInput]);
 
   // Gets details from the Places API and updates the state
   function getDetailsFromPlacesAPI() {
@@ -248,6 +269,16 @@ function SearchForm(props) {
       </Col>
     </Row>
   );
+}
+
+// Ensures that the userinput is valid
+function isUserInputValid(userInput) {
+  return userInput && userInput.description !== "";
+}
+
+// Ensures that the space object has all required fields after a getDetails call
+function spaceObjectHasRequiredFields(space) {
+  return space && space.name;
 }
 
 export default NewSpace;
