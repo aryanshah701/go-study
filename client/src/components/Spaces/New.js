@@ -1,7 +1,10 @@
 import { Row, Col, Form, Alert, Button } from "react-bootstrap";
-import { useState, useEffect } from "react";
 import GooglePlacesAutocomplete from "react-google-places-autocomplete";
+
+import { useState, useEffect } from "react";
 import { apiCreateSpace } from "../../api";
+import store from "../../store";
+import { useHistory } from "react-router-dom";
 
 // Search radius in miles
 const RADIUS = 10;
@@ -38,19 +41,16 @@ function NewSpace() {
   function handleError(err) {
     // Set the Position to null to indicate an err
     setPosition(null);
-    console.log("Error with geolocation: ", err);
   }
 
   // Get the user's geolocation on component load
   useEffect(() => {
-    console.log("Using geolocation");
     if ("geolocation" in navigator) {
       console.log("Available");
+      navigator.geolocation.getCurrentPosition(setLocation, handleError, {
+        timeout: 10000,
+      });
     }
-
-    navigator.geolocation.getCurrentPosition(setLocation, handleError, {
-      timeout: 10000,
-    });
 
     // Cleanup
     return () => {
@@ -122,16 +122,23 @@ function SearchForm(props) {
     setUserInput,
   } = props;
 
+  // For redirection purposes
+  const history = useHistory();
+
   // Create the new Space when the space object has been set
   useEffect(() => {
-    console.log("Space object: ", space);
-
     // Ensure that the spaces object is valid
     if (spaceObjectHasRequiredFields(space)) {
       // Check user inputed fields
       if (!isUserInputValid(userInput)) {
-        // Handle error
-        console.log("Handle user input error");
+        // Dispatch input error message
+        const errorAction = {
+          type: "error/set",
+          data: "Please enter a description",
+        };
+
+        store.dispatch(errorAction);
+
         return;
       }
 
@@ -143,24 +150,28 @@ function SearchForm(props) {
       };
 
       // Make the POST request to create the space
-      console.log("Final space: ", completeSpace);
       apiCreateSpace(completeSpace).then((response) => {
-        // If successful creation
-        // if (success) {
-        //   console.log("New space should have been created successfuly");
-        // } else {
-        //   console.log("Something went wrong creating the space");
-        // }
-        console.log("Response: ", response);
+        // If successful creation, naviagte to the event's page
+        if (response) {
+          history.push("/spaces/" + response.id);
+        }
       });
     }
-  }, [space, userInput]);
+  }, [space, userInput, history]);
 
   // Gets details from the Places API and updates the state
   function getDetailsFromPlacesAPI() {
     // If the searchedSpace isn't set yet
     if (!searchedSpace || searchedSpace === "") {
-      console.log("Display error: ", searchedSpace);
+      // Dispatch error
+      const errorAction = {
+        type: "error/set",
+        data: "Please select a valid place to save",
+      };
+
+      store.dispatch(errorAction);
+
+      return;
     }
 
     // Get place details from google places
@@ -188,11 +199,17 @@ function SearchForm(props) {
   // Saves the places API response to getDetails to state
   function savePlacesResult(place, status) {
     if (status !== "OK" || !place) {
-      console.log("Handle error from places");
+      // Dispatch an error
+      const errorAction = {
+        type: "error/set",
+        action: "Something went wrong. Message from Google Places: " + status,
+      };
+
+      store.dispatch(errorAction);
+
       return;
     }
 
-    console.log("Place: ", place);
     setSpace({
       name: place.name,
       address: place.formatted_address,
@@ -209,7 +226,19 @@ function SearchForm(props) {
   }
 
   // Handle any error from the google autocomplete component
-  function handleAutocompleteError(err) {}
+  function handleAutocompleteError(err) {
+    // Dispatch an error
+    const errorAction = {
+      type: "error/set",
+      action:
+        "Something went wrong with Google Places. Try reloading or revisiting.",
+    };
+
+    store.dispatch(errorAction);
+
+    console.error("Error with autocomplete: " + err);
+    return;
+  }
 
   // Google Places autocomplete and controlled form
   return (
@@ -259,7 +288,6 @@ function SearchForm(props) {
               label="Free Public Wifi?"
               checked={userInput.hasWifi}
               onChange={(ev) => {
-                console.log(ev.target.value);
                 setUserInput({
                   ...userInput,
                   hasWifi: ev.target.checked,
