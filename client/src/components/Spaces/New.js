@@ -2,7 +2,7 @@ import { Row, Col, Form, Alert, Button } from "react-bootstrap";
 import GooglePlacesAutocomplete from "react-google-places-autocomplete";
 
 import { useState, useEffect } from "react";
-import { apiCreateSpace } from "../../api";
+import { apiCreateSpace, fetchRecommendation } from "../../api";
 import store from "../../store";
 import { useHistory } from "react-router-dom";
 
@@ -12,9 +12,13 @@ const RADIUS = 10;
 // Google library
 const google = window.google;
 
+// Create a new space page
 function NewSpace() {
   // State for the position
   const [position, setPosition] = useState(null);
+
+  // State for the recommended spaces
+  const [recommendations, setRecommendations] = useState(null);
 
   // State for the autocomplete value(space searched)
   const [searchedSpace, setSearchedSpace] = useState(null);
@@ -58,6 +62,18 @@ function NewSpace() {
     };
   }, []);
 
+  // Get the recommended places once the geolocation is obtained
+  useEffect(() => {
+    if (position) {
+      fetchRecommendation(position).then((response) => {
+        // If a response was returned successfully
+        if (response) {
+          setRecommendations(response);
+        }
+      });
+    }
+  }, [position]);
+
   // Handle the case in which geolocation isn't enabled
   if (!position) {
     return (
@@ -71,8 +87,8 @@ function NewSpace() {
           <Row>
             <Col>
               <Alert variant="info">
-                Locating Spaces nearby you. If you have location disabled,
-                enable it and come back to this page.
+                Locating Spaces nearby you. If you have location disabled, try
+                enabling it and come back to this page.
               </Alert>
             </Col>
           </Row>
@@ -96,6 +112,7 @@ function NewSpace() {
             </p>
           </Col>
         </Row>
+        <Recommendations />
         <SearchForm
           position={position}
           searchedSpace={searchedSpace}
@@ -105,6 +122,23 @@ function NewSpace() {
           userInput={userInput}
           setUserInput={setUserInput}
         />
+      </Col>
+    </Row>
+  );
+}
+
+function Recommendations() {
+  return (
+    <Row>
+      <Col>
+        <Row>
+          <Col>
+            <h2>Recommended Places Near You</h2>
+          </Col>
+        </Row>
+        <Row>
+          <Col></Col>
+        </Row>
       </Col>
     </Row>
   );
