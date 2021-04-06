@@ -28,6 +28,7 @@ defmodule ApiWeb.Router do
     resources "/reviews", ReviewController, except: [:new, :edit]
     resources "/comments", CommentController, except: [:new, :edit]
     resources "/session", SessionController, only: [:create]
+    resources "/recommendations", RecommendationController, only: [:index]
   end
 
   # Enables LiveDashboard only for development

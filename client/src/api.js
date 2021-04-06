@@ -220,9 +220,9 @@ export async function fetchRecommendation(position) {
 
   // Make the get request and dispatch the data if successful
   const uri =
-    "/recommendations" +
+    "/recommendations?" +
     new URLSearchParams({
-      lat: position.lng,
+      lat: position.lat,
       lng: position.long,
     });
   const response = await getRequest(uri, token);
