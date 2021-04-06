@@ -168,9 +168,9 @@ async function getRequest(endpoint, token) {
     },
   };
 
-  const repsonse = await fetch(apiUrl + endpoint, options);
+  const response = await fetch(apiUrl + endpoint, options);
 
-  return await repsonse.json();
+  return await response.json();
 }
 
 // Fetch all user data and dispatch it to the store
@@ -225,11 +225,13 @@ export async function fetchRecommendation(position) {
       lat: position.lat,
       lng: position.long,
     });
+
   const response = await getRequest(uri, token);
 
   // Return the recommendations if it was successful in fetching it
-  if (response.data) {
-    return response.data;
+  if (response.recommendations) {
+    const recommendations = response.recommendations;
+    return recommendations;
   } else {
     return null;
   }

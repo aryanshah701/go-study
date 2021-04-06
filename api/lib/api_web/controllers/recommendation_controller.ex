@@ -9,32 +9,45 @@ defmodule ApiWeb.RecommendationController do
       # Get nearby cafes and libraries from google places
       lat = query_params["lat"]
       lng = query_params["lng"]
-      key = ""
+      key = "AIzaSyCGHtmjKxTs_xZbOpCSut7WnF4ge06p9OU"
       url = "https://maps.googleapis.com/maps/api/place/nearbysearch/json?"
             <> "location=#{lat},#{lng}&rankby=distance&"
             <> "types=cafe&key=#{key}"
 
       resp = HTTPoison.get!(url)
-      recommendations = Jason.decode!(resp.body)
+      data = Jason.decode!(resp.body)
       
-      IO.inspect recommendations
+      # Successful query to google places API
+      if data["status"] == "OK" do
+        max_recommendations = get_max_recommendations(data["results"])
+        recommendations = Enum.take(data["results"], max_recommendations)
+        conn 
+          |> put_resp_header(
+            "content-type",
+            "application/json; charset=UTF-8")
+          |> send_resp(
+            :ok,
+            Jason.encode!(%{recommendations: recommendations})
+          )
+      else
+        conn 
+          |> put_resp_header(
+            "content-type",
+            "application/json; charset=UTF-8")
+          |> send_resp(
+            :no_content,
+            Jason.encode!(%{error: "Sorry, something went wrong with the Google Places API"})
+          )
+      end
 
-      conn 
-        |> put_resp_header(
-          "content-type",
-          "application/json; charset=UTF-8")
-        |> send_resp(
-          :ok,
-          Jason.encode!(%{recommendations: recommendations})
-        )
     else
       conn 
         |> put_resp_header(
           "content-type",
           "application/json; charset=UTF-8")
         |> send_resp(
-          :bad_request,
-          Jason.encode!(%{error: "Please provide the lat and lng fields in the search query"})
+          :no_content,
+          Jason.encode!(%{error: "Please provide the lat and lng search query strings in the request"})
         )
     end
   
@@ -42,5 +55,13 @@ defmodule ApiWeb.RecommendationController do
 
   def validate_recommendation_query(query_params) do
     Map.has_key?(query_params, "lat") && Map.has_key?(query_params, "lng")
+  end
+
+  def get_max_recommendations(results) do
+    if Enum.count(results) < 4 do
+      Enum.count(results)
+    else
+      4
+    end
   end
 end

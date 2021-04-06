@@ -1,4 +1,4 @@
-import { Row, Col, Form, Alert, Button } from "react-bootstrap";
+import { Row, Col, Form, Alert, Button, Card, Badge } from "react-bootstrap";
 import GooglePlacesAutocomplete from "react-google-places-autocomplete";
 
 import { useState, useEffect } from "react";
@@ -50,7 +50,6 @@ function NewSpace() {
   // Get the user's geolocation on component load
   useEffect(() => {
     if ("geolocation" in navigator) {
-      console.log("Available");
       navigator.geolocation.getCurrentPosition(setLocation, handleError, {
         timeout: 10000,
       });
@@ -65,10 +64,10 @@ function NewSpace() {
   // Get the recommended places once the geolocation is obtained
   useEffect(() => {
     if (position) {
-      fetchRecommendation(position).then((response) => {
+      fetchRecommendation(position).then((recommendations) => {
         // If a response was returned successfully
-        if (response) {
-          setRecommendations(response);
+        if (recommendations) {
+          setRecommendations(recommendations);
         }
       });
     }
@@ -112,7 +111,10 @@ function NewSpace() {
             </p>
           </Col>
         </Row>
-        <Recommendations />
+        <Recommendations
+          recommendations={recommendations}
+          setSearchedSpace={setSearchedSpace}
+        />
         <SearchForm
           position={position}
           searchedSpace={searchedSpace}
@@ -127,18 +129,79 @@ function NewSpace() {
   );
 }
 
-function Recommendations() {
+function priceToDollar(price_level) {
+  switch (price_level) {
+    case 1:
+      return "$";
+    case 2:
+      return "$$";
+    case 3:
+      return "$$$";
+    case 4:
+      return "$$$$";
+    default:
+      return null;
+  }
+}
+
+function Recommendations({ recommendations, setSearchedSpace }) {
+  if (!recommendations) {
+    return (
+      <Row>
+        <Col>
+          <p>Looking for potential study spots nearby</p>
+        </Col>
+      </Row>
+    );
+  }
+
+  // Handle select recommendation event
+  function selectRecommendation(recommendation) {
+    console.log(recommendation.place_id);
+    set;
+  }
+
+  const cards = recommendations.map((recommendation, idx) => {
+    return (
+      <Col key={idx} className="col-md-6 col-lg-3 my-2">
+        <Card className="h-100">
+          <Card.Header as="h5">{recommendation.name}</Card.Header>
+          <Card.Body>
+            <Card.Text>Location: {recommendation.vicinity}</Card.Text>
+          </Card.Body>
+          <Row className="my-3 mx-2">
+            <Col className="col-2">
+              <Badge variant="dark">{recommendation.rating}</Badge>
+            </Col>
+            <Col className="col-2">
+              <Badge variant="dark">
+                {priceToDollar(recommendation.price_level)}
+              </Badge>
+            </Col>
+          </Row>
+
+          <Card.Footer className="text-muted">
+            <Card.Link
+              variant="primary"
+              onClick={(ev) => selectRecommendation(recommendation)}
+            >
+              Select
+            </Card.Link>
+          </Card.Footer>
+        </Card>
+      </Col>
+    );
+  });
+
   return (
-    <Row>
+    <Row className="mt-5">
       <Col>
         <Row>
           <Col>
-            <h2>Recommended Places Near You</h2>
+            <h4>Recommended Spaces Near You</h4>
           </Col>
         </Row>
-        <Row>
-          <Col></Col>
-        </Row>
+        <Row className="d-flex align-items-stretch">{cards}</Row>
       </Col>
     </Row>
   );
@@ -158,6 +221,8 @@ function SearchForm(props) {
 
   // For redirection purposes
   const history = useHistory();
+
+  console.log("Searched place: " + JSON.stringify(searchedSpace));
 
   // Create the new Space when the space object has been set
   useEffect(() => {
@@ -276,8 +341,13 @@ function SearchForm(props) {
 
   // Google Places autocomplete and controlled form
   return (
-    <Row>
+    <Row className="mt-5">
       <Col>
+        <Row>
+          <Col>
+            <h4>Manually Search for a Space</h4>
+          </Col>
+        </Row>
         <Form>
           <Form.Group>
             <Form.Label>Search for the space you wish to add</Form.Label>
