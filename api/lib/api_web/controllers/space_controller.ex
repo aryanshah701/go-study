@@ -8,6 +8,12 @@ defmodule ApiWeb.SpaceController do
 
   plug ApiWeb.Plugs.RequireAuth, "en" when action in [:create, :update, :delete]
 
+  def space_owner?(conn, space) do
+    curr_user_id = conn.assigns[:user].id
+    owner_user_id = space.user_id
+    curr_user_id == owner_user_id
+  end
+
   def index(conn, _params) do
     spaces = Spaces.list_spaces()
     render(conn, "index.json", spaces: spaces)
@@ -34,16 +40,39 @@ defmodule ApiWeb.SpaceController do
   def update(conn, %{"id" => id, "space" => space_params}) do
     space = Spaces.get_space!(id)
 
-    with {:ok, %Space{} = space} <- Spaces.update_space(space, space_params) do
-      render(conn, "show.json", space: space)
+    if space_owner?(conn, space) do
+      with {:ok, %Space{} = space} <- Spaces.update_space(space, space_params) do
+        render(conn, "show.json", space: space)
+      end
+    else
+      conn
+      |> put_resp_header(
+        "content-type",
+        "application/json; charset=UTF-8")
+      |> send_resp(
+        :unauthorized,
+        Jason.encode!(%{error: "You must be the owner of this space."})
+      )
     end
   end
 
   def delete(conn, %{"id" => id}) do
     space = Spaces.get_space!(id)
 
-    with {:ok, %Space{}} <- Spaces.delete_space(space) do
-      send_resp(conn, :no_content, "")
+    if space_owner?(conn, space) do
+      with {:ok, %Space{}} <- Spaces.delete_space(space) do
+        send_resp(conn, :no_content, "")
+      end
+    else
+      conn
+      |> put_resp_header(
+        "content-type",
+        "application/json; charset=UTF-8")
+      |> send_resp(
+        :unauthorized,
+        Jason.encode!(%{error: "You must be the owner of this space."})
+      )
     end
   end
+  
 end
