@@ -11,7 +11,7 @@ function ShowEvent() {
       <Col>
         <Row>
           <Col>
-            <h1>Event {id}</h1>
+            <h1>Space {id}</h1>
           </Col>
         </Row>
       </Col>

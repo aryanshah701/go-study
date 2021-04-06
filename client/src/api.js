@@ -168,9 +168,9 @@ async function getRequest(endpoint, token) {
     },
   };
 
-  const repsonse = await fetch(apiUrl + endpoint, options);
+  const response = await fetch(apiUrl + endpoint, options);
 
-  return await repsonse.json();
+  return await response.json();
 }
 
 // Fetch all user data and dispatch it to the store
@@ -204,4 +204,35 @@ export function fetchUserData() {
     });
 
   return isSuccess;
+}
+
+// Fetches the nearby recommended places for a user to add
+export async function fetchRecommendation(position) {
+  const state = store.getState();
+  const session = state.session;
+
+  // If the user is not logged in, dispatch error
+  if (!isLoggedIn(session)) {
+    return null;
+  }
+
+  const token = session.token;
+
+  // Make the get request and dispatch the data if successful
+  const uri =
+    "/recommendations?" +
+    new URLSearchParams({
+      lat: position.lat,
+      lng: position.long,
+    });
+
+  const response = await getRequest(uri, token);
+
+  // Return the recommendations if it was successful in fetching it
+  if (response.recommendations) {
+    const recommendations = response.recommendations;
+    return recommendations;
+  } else {
+    return null;
+  }
 }
