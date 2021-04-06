@@ -67,7 +67,16 @@ function NewSpace() {
       fetchRecommendation(position).then((recommendations) => {
         // If a response was returned successfully
         if (recommendations) {
-          setRecommendations(recommendations);
+          // Add a selected field onto each recommendation
+          const clientRecommendations = recommendations.map(
+            (recommendation) => {
+              return {
+                ...recommendation,
+                selected: false,
+              };
+            }
+          );
+          setRecommendations(clientRecommendations);
         }
       });
     }
@@ -113,6 +122,7 @@ function NewSpace() {
         </Row>
         <Recommendations
           recommendations={recommendations}
+          setRecommendations={setRecommendations}
           setSearchedSpace={setSearchedSpace}
         />
         <SearchForm
@@ -123,6 +133,7 @@ function NewSpace() {
           setSpace={setSpace}
           userInput={userInput}
           setUserInput={setUserInput}
+          recommendations={recommendations}
         />
       </Col>
     </Row>
@@ -144,7 +155,8 @@ function priceToDollar(price_level) {
   }
 }
 
-function Recommendations({ recommendations, setSearchedSpace }) {
+function Recommendations(props) {
+  const { recommendations, setRecommendations, setSearchedSpace } = props;
   if (!recommendations) {
     return (
       <Row>
@@ -156,15 +168,37 @@ function Recommendations({ recommendations, setSearchedSpace }) {
   }
 
   // Handle select recommendation event
-  function selectRecommendation(recommendation) {
-    console.log(recommendation.place_id);
-    set;
+  function selectRecommendation(recommendation, rIdx, isSelecting) {
+    // Select/Deselect this recommendation and deselect the rest
+    const newRecommendations = recommendations.map((recommendation, idx) => {
+      if (idx === rIdx) {
+        // Select/Deselect this
+        return { ...recommendation, selected: !recommendation.selected };
+      } else {
+        // Deselect rest
+        return { ...recommendation, selected: false };
+      }
+    });
+    setRecommendations(newRecommendations);
+
+    if (isSelecting) {
+      // If selecting, set the search space so that it has the place id to be used by getDetails
+      setSearchedSpace({
+        value: {
+          place_id: recommendation.place_id,
+        },
+      });
+    } else {
+      // If deselecting, set the search space back to null
+      setSearchedSpace(null);
+    }
   }
 
   const cards = recommendations.map((recommendation, idx) => {
+    const bg = recommendation.selected ? "success" : "light";
     return (
       <Col key={idx} className="col-md-6 col-lg-3 my-2">
-        <Card className="h-100">
+        <Card className="h-100 light" bg={bg}>
           <Card.Header as="h5">{recommendation.name}</Card.Header>
           <Card.Body>
             <Card.Text>Location: {recommendation.vicinity}</Card.Text>
@@ -183,7 +217,10 @@ function Recommendations({ recommendations, setSearchedSpace }) {
           <Card.Footer className="text-muted">
             <Card.Link
               variant="primary"
-              onClick={(ev) => selectRecommendation(recommendation)}
+              onClick={(ev) => {
+                const isSelecting = bg === "light";
+                selectRecommendation(recommendation, idx, isSelecting);
+              }}
             >
               Select
             </Card.Link>
@@ -217,6 +254,7 @@ function SearchForm(props) {
     setSpace,
     userInput,
     setUserInput,
+    recommendations,
   } = props;
 
   // For redirection purposes
@@ -340,6 +378,7 @@ function SearchForm(props) {
   }
 
   // Google Places autocomplete and controlled form
+  const anyRecommendationSelected = recommendationSelected(recommendations);
   return (
     <Row className="mt-5">
       <Col>
@@ -358,6 +397,7 @@ function SearchForm(props) {
                   selectProps={{
                     searchedSpace,
                     onChange: setSearchedSpace,
+                    isDisabled: anyRecommendationSelected,
                   }}
                   autocompletionRequest={{
                     location: {
@@ -405,6 +445,14 @@ function SearchForm(props) {
       </Col>
     </Row>
   );
+}
+
+// Checks if any of the given recommendations are selected
+function recommendationSelected(recommendations) {
+  if (!recommendations) {
+    return false;
+  }
+  return recommendations.some((recommendation) => recommendation.selected);
 }
 
 // Ensures that the userinput is valid
