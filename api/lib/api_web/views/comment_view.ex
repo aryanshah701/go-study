@@ -25,7 +25,12 @@ defmodule ApiWeb.CommentView do
   end
 
   def render("comment_without_assoc.json", %{comment: comment}) do
+    # Preload nested data
+    comment = Comments.get_comment!(comment.id)
+
     %{id: comment.id,
-      body: comment.body}
+      body: comment.body,
+      user_id: comment.user_id,
+      user: comment.user.name}
   end
 end
