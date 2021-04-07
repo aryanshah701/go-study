@@ -10,6 +10,7 @@ import {
   InputGroup,
   FormControl,
 } from "react-bootstrap";
+import StarRatings from "react-star-ratings";
 
 import { useParams, useHistory } from "react-router-dom";
 import { connect } from "react-redux";
@@ -83,11 +84,7 @@ function SpaceInfo({ space, session, history }) {
         </Row>
         <Row className="mt-5 border-top">
           <Col>
-            <SpaceDescription
-              space={space}
-              session={session}
-              history={history}
-            />
+            <SpaceDescription space={space} />
           </Col>
         </Row>
         <Comments
@@ -101,13 +98,16 @@ function SpaceInfo({ space, session, history }) {
   );
 }
 
-function SpaceDescription({ space, session, history }) {
+function SpaceDescription({ space, session }) {
   // For copy popover when share button is clicked
   const copyPopover = (
     <Popover>
       <Popover.Content>Link copied!</Popover.Content>
     </Popover>
   );
+
+  // State for the user rating
+  const [userRating, setUserRating] = useState(space.avg_review);
 
   const spaceUrl = "https://go-study.aryanshah.tech/spaces/" + space.id;
 
@@ -155,7 +155,19 @@ function SpaceDescription({ space, session, history }) {
               <span className="sr-only">gostudy's review</span>
             </Button>
           </div>
-          <div className="mr-2"></div>
+          <div className="mr-2">
+            <StarRatings
+              starRatedColor="#5b54da"
+              starHoverColor="#5b54da"
+              starEmptyColor="#aaa9ad"
+              starDimension="30px"
+              starSpacing="3px"
+              rating={userRating}
+              changeRating={(rating) => {
+                setUserRating(rating);
+              }}
+            />
+          </div>
         </Row>
         <Row className="mt-4 mb-2">
           <Col>
