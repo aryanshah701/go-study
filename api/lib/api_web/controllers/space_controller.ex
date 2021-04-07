@@ -26,10 +26,13 @@ defmodule ApiWeb.SpaceController do
     end
   end
 
-  def show(conn, %{"id" => id}) do
-    space = Spaces.get_space!(id)
-    render(conn, "show.json", space: space)
+  def show(conn, %{}) do
+    #space = Spaces.get_space!(id)
+    spaces = Spaces.list_spaces()
+    render(conn, "show.json", spaces: spaces)
   end
+
+
 
   def update(conn, %{"id" => id, "space" => space_params}) do
     space = Spaces.get_space!(id)

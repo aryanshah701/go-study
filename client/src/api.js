@@ -160,7 +160,7 @@ export async function apiCreateSpace(space) {
 
 // --------------------- GET REQUESTS -------------------------------
 // Fetches data from the API given the endpoint
-async function getRequest(endpoint, token) {
+async function getRequest(endpoint, token='') {
   const options = {
     method: "GET",
     headers: {
@@ -171,6 +171,28 @@ async function getRequest(endpoint, token) {
   const repsonse = await fetch(apiUrl + endpoint, options);
 
   return await repsonse.json();
+}
+
+export async function fetchSpacesData() {
+    const state = store.getState();
+
+    // Make the get request and dispatch the data if successful
+    const isSuccess = getRequest("/spaces/")
+      .then((spacesData) => {
+        const action = {
+          type: "spaces/set",
+          data: spacesData,
+        };
+
+        store.dispatch(action);
+        return true;
+      })
+      .catch((err) => {
+        console.log("err", err);
+        return false;
+      });
+
+    return isSuccess;
 }
 
 // Fetch all user data and dispatch it to the store

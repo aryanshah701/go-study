@@ -2,6 +2,16 @@
 import { createStore, combineReducers } from "redux";
 
 
+//Space Reducer
+function spaces(state = null, action) {
+  switch (action.type) {
+      case "spaces/set":
+      return action.data;
+    default:
+      return state;
+  }
+}
+
 // User reducer(authenticated user data)
 function user(state = null, action) {
   switch (action.type) {
@@ -87,6 +97,7 @@ function rootReducer(state, action) {
     user,
     error,
     success,
+    spaces,
   });
 
   const updatedState = reducers(state, action);

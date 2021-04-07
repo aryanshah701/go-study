@@ -6,6 +6,7 @@ import store from "./store";
 import { Provider } from "react-redux";
 import reportWebVitals from './reportWebVitals';
 import { BrowserRouter as Router } from "react-router-dom";
+import { fetchSpacesData } from "./api"
 
 ReactDOM.render(
   <React.StrictMode>
@@ -18,4 +19,5 @@ ReactDOM.render(
   document.getElementById("root")
 );
 
+fetchSpacesData();
 reportWebVitals();
