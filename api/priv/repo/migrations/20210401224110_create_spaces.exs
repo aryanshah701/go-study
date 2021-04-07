@@ -13,7 +13,7 @@ defmodule Api.Repo.Migrations.CreateSpaces do
       add :address, :string, null: false
       add :google_rating, :float, null: false
       add :opening_hours, {:array, :string}, null: false
-      add :photo, :text, null: false
+      add :photo, :text, default: "", null: false
       add :type, :string, null: false
 
       timestamps()

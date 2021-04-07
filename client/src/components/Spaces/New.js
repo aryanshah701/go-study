@@ -309,10 +309,12 @@ function SearchForm(props) {
           // If successful creation
           if (space) {
             // Fetch the space
-            fetchSpace(space.id);
-
-            // Navigate to the space's page
-            history.push("/spaces/" + space.id);
+            fetchSpace(space.id).then((space) => {
+              if (space) {
+                // Navigate to the space's page
+                history.push("/spaces/" + space.id);
+              }
+            });
           }
         });
 

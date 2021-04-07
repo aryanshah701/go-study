@@ -126,8 +126,6 @@ export async function apiCreateSpace(space) {
   const state = store.getState();
   const session = state.session;
 
-  console.log("Creating: ", space);
-
   // If the user is not logged in, dispatch error
   if (!isLoggedIn(session)) {
     return false;
@@ -150,14 +148,24 @@ export async function apiCreateSpace(space) {
   }
 
   // Else, dispatch an error
+  const err = getCreateSpaceError(response.errors);
+
   const errorAction = {
     type: "error/set",
-    data: "Something went wrong when creating the Space",
+    data: err,
   };
 
   store.dispatch(errorAction);
 
   return null;
+}
+
+function getCreateSpaceError(errors) {
+  if (errors.description) {
+    return "Description: " + errors.description[0];
+  } else {
+    return "Something went wrong when creating the Space";
+  }
 }
 
 // --------------------- GET REQUESTS -------------------------------
@@ -241,13 +249,31 @@ export async function fetchRecommendation(position) {
 
 // Fetches the space with the given id and updates the store
 export async function fetchSpace(id) {
-  const space = await getRequest("/spaces/" + id);
+  let space;
+  try {
+    space = await getRequest("/spaces/" + id);
+  } catch (err) {
+    const errAction = {
+      type: "error/set",
+      data: "Sorry this space doesn't exist",
+    };
 
-  // Store the space
-  const action = {
-    type: "showSpaces/update",
-    data: space.data,
-  };
+    store.dispatch(errAction);
 
-  store.dispatch(action);
+    return null;
+  }
+
+  if (space.data) {
+    // Store the space
+    const action = {
+      type: "showSpaces/update",
+      data: space.data,
+    };
+
+    store.dispatch(action);
+
+    return space.data;
+  }
+
+  return null;
 }
