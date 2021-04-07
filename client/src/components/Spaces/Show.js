@@ -16,6 +16,7 @@ import { useParams, useHistory } from "react-router-dom";
 import { connect } from "react-redux";
 import { fetchSpace } from "../../api";
 import { useState } from "react";
+import { apiPostReview } from "../../api";
 
 // The SHOW event page
 function ShowEvent(props) {
@@ -98,16 +99,13 @@ function SpaceInfo({ space, session, history }) {
   );
 }
 
-function SpaceDescription({ space, session }) {
+function SpaceDescription({ space }) {
   // For copy popover when share button is clicked
   const copyPopover = (
     <Popover>
       <Popover.Content>Link copied!</Popover.Content>
     </Popover>
   );
-
-  // State for the user rating
-  const [userRating, setUserRating] = useState(space.avg_review);
 
   const spaceUrl = "https://go-study.aryanshah.tech/spaces/" + space.id;
 
@@ -150,23 +148,13 @@ function SpaceDescription({ space, session }) {
             <Button variant="primary">
               GoStudy{" "}
               <Badge variant="light">
-                {space.avg_review === 0 ? space.avg_review : "NA"}
+                {space.avg_rating === 0 ? "NA" : space.avg_rating}
               </Badge>
               <span className="sr-only">gostudy's review</span>
             </Button>
           </div>
           <div className="mr-2">
-            <StarRatings
-              starRatedColor="#5b54da"
-              starHoverColor="#5b54da"
-              starEmptyColor="#aaa9ad"
-              starDimension="30px"
-              starSpacing="3px"
-              rating={userRating}
-              changeRating={(rating) => {
-                setUserRating(rating);
-              }}
-            />
+            <ReviewInput space={space} />
           </div>
         </Row>
         <Row className="mt-4 mb-2">
@@ -181,6 +169,39 @@ function SpaceDescription({ space, session }) {
         </Row>
       </Col>
     </Row>
+  );
+}
+
+// Star rating display
+function ReviewInput({ space }) {
+  // State for the user rating
+  const [userRating, setUserRating] = useState(space.avg_review);
+
+  // Send review
+  function sendReview(rating) {
+    console.log("Send rating: " + rating);
+    apiPostReview(rating, space.id).then((success) => {
+      if (success) {
+        console.log("review posted");
+      } else {
+        console.log("review err");
+      }
+    });
+  }
+
+  return (
+    <StarRatings
+      starRatedColor="#5b54da"
+      starHoverColor="#5b54da"
+      starEmptyColor="#aaa9ad"
+      starDimension="30px"
+      starSpacing="3px"
+      rating={userRating}
+      changeRating={(rating) => {
+        setUserRating(rating);
+        sendReview(rating);
+      }}
+    />
   );
 }
 

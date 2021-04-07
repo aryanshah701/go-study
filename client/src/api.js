@@ -168,6 +168,50 @@ function getCreateSpaceError(errors) {
   }
 }
 
+export async function apiPostReview(rating, spaceId) {
+  // Ensure that the user is logged in
+  const state = store.getState();
+  const session = state.session;
+
+  if (!isLoggedIn(session)) {
+    return false;
+  }
+
+  const review = {
+    rating: rating,
+    space_id: spaceId,
+  };
+
+  const token = session.token;
+
+  const response = await postRequest("/reviews", { review: review }, token);
+
+  // If successfully posted, then upadate the store with the newest version of the event
+  if (response.data) {
+    const newSpace = response.data.space.data;
+    const action = {
+      type: "showSpaces/update",
+      data: newSpace,
+    };
+
+    store.dispatch(action);
+
+    return true;
+  }
+
+  // Else dispatch an error
+  const errAction = {
+    type: "error/set",
+    data: "Oops, something went wrong when posting your review",
+  };
+
+  console.log("review create err: ", response.errors);
+
+  store.dispatch(errAction);
+
+  return false;
+}
+
 // --------------------- GET REQUESTS -------------------------------
 // Fetches data from the API given the endpoint
 async function getRequest(endpoint, token) {
