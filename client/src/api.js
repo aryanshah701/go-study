@@ -126,6 +126,8 @@ export async function apiCreateSpace(space) {
   const state = store.getState();
   const session = state.session;
 
+  console.log("Creating: ", space);
+
   // If the user is not logged in, dispatch error
   if (!isLoggedIn(session)) {
     return false;
@@ -155,7 +157,7 @@ export async function apiCreateSpace(space) {
 
   store.dispatch(errorAction);
 
-  return response.errors;
+  return null;
 }
 
 // --------------------- GET REQUESTS -------------------------------
@@ -235,4 +237,17 @@ export async function fetchRecommendation(position) {
   } else {
     return null;
   }
+}
+
+// Fetches the space with the given id and updates the store
+export async function fetchSpace(id) {
+  const space = await getRequest("/spaces/" + id);
+
+  // Store the space
+  const action = {
+    type: "showSpaces/update",
+    data: space.data,
+  };
+
+  store.dispatch(action);
 }

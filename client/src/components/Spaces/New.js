@@ -3,7 +3,7 @@ import Fade from "react-bootstrap/Fade";
 import GooglePlacesAutocomplete from "react-google-places-autocomplete";
 
 import { useState, useEffect } from "react";
-import { apiCreateSpace, fetchRecommendation } from "../../api";
+import { apiCreateSpace, fetchRecommendation, fetchSpace } from "../../api";
 import store from "../../store";
 import { useHistory } from "react-router-dom";
 
@@ -32,6 +32,9 @@ function NewSpace() {
     description: "",
     hasWifi: false,
   });
+
+  // State for whether the form has been submitted
+  const [submitted, setSubmitted] = useState(false);
 
   // Function to set the user's location as state
   function setLocation(position) {
@@ -142,6 +145,8 @@ function NewSpace() {
           userInput={userInput}
           setUserInput={setUserInput}
           recommendations={recommendations}
+          setSubmitted={setSubmitted}
+          submitted={submitted}
         />
       </Col>
     </Row>
@@ -265,12 +270,12 @@ function SearchForm(props) {
     userInput,
     setUserInput,
     recommendations,
+    submitted,
+    setSubmitted,
   } = props;
 
   // For redirection purposes
   const history = useHistory();
-
-  console.log("Searched place: " + JSON.stringify(searchedSpace));
 
   // Create the new Space when the space object has been set
   useEffect(() => {
@@ -286,28 +291,40 @@ function SearchForm(props) {
 
         store.dispatch(errorAction);
 
+        setSubmitted(false);
+
         return;
       }
 
-      // Add user inputed fields to object
-      const completeSpace = {
-        ...space,
-        wifi: userInput.hasWifi,
-        description: userInput.description,
-      };
+      if (submitted) {
+        // Add user inputed fields to object
+        const completeSpace = {
+          ...space,
+          wifi: userInput.hasWifi,
+          description: userInput.description,
+        };
 
-      // Make the POST request to create the space
-      apiCreateSpace(completeSpace).then((response) => {
-        // If successful creation, naviagte to the event's page
-        if (response) {
-          history.push("/spaces/" + response.id);
-        }
-      });
+        // Make the POST request to create the space
+        apiCreateSpace(completeSpace).then((space) => {
+          // If successful creation
+          if (space) {
+            // Fetch the space
+            fetchSpace(space.id);
+
+            // Navigate to the space's page
+            history.push("/spaces/" + space.id);
+          }
+        });
+
+        setSubmitted(false);
+      }
     }
-  }, [space, userInput, history]);
+  }, [space, userInput, history, setSubmitted, submitted]);
 
   // Gets details from the Places API and updates the state
   function getDetailsFromPlacesAPI() {
+    setSubmitted(true);
+
     // If the searchedSpace isn't set yet
     if (!searchedSpace || searchedSpace === "") {
       // Dispatch error
@@ -361,7 +378,7 @@ function SearchForm(props) {
       name: place.name,
       address: place.formatted_address,
       google_rating: place.rating,
-      photo: place.photos[0].getUrl(),
+      photo: place.photos ? place.photos[0].getUrl() : "",
       opening_hours: place.opening_hours.weekday_text,
       type: place.types[0],
       website: place.website,

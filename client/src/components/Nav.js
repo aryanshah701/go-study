@@ -3,9 +3,6 @@ import { NavLink, useHistory } from "react-router-dom";
 import { connect } from "react-redux";
 import store from "../store";
 
-// NavLink style
-const linkStyle = { color: "black" };
-
 // Navbar component
 function NavBar(props) {
   const { success, error } = props;
