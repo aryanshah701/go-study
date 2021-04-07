@@ -1,7 +1,6 @@
 // File for redux reducer functions
 import { createStore, combineReducers } from "redux";
 
-
 // User reducer(authenticated user data)
 function user(state = null, action) {
   switch (action.type) {
@@ -70,6 +69,16 @@ function error(state = "", action) {
   }
 }
 
+// Info flash reducer
+function info(stat = "", action) {
+  switch (action.type) {
+    case "error/set":
+      return action.data;
+    default:
+      return null;
+  }
+}
+
 // Success flash reducer
 function success(state = "", action) {
   switch (action.type) {
@@ -87,6 +96,7 @@ function rootReducer(state, action) {
     user,
     error,
     success,
+    info,
   });
 
   const updatedState = reducers(state, action);

@@ -1,7 +1,10 @@
-import { Nav, Row, Col, Alert } from "react-bootstrap";
+import { Nav, Navbar, Row, Col, Alert } from "react-bootstrap";
 import { NavLink, useHistory } from "react-router-dom";
 import { connect } from "react-redux";
 import store from "../store";
+
+// NavLink style
+const linkStyle = { color: "black" };
 
 // Navbar component
 function NavBar(props) {
@@ -29,9 +32,12 @@ function NavBar(props) {
         </Row>
         <Row>
           <Col>
-            <Nav as="ul">
+            <Navbar bg="light" as="ul">
+              <NavLink to="/" className="nav-link mx-2 mr-auto p-0" exact>
+                GoStudy
+              </NavLink>
               <NavInfo />
-            </Nav>
+            </Navbar>
           </Col>
         </Row>
       </Col>
@@ -44,12 +50,12 @@ const NavInfo = connect(stateToProps)(({ session }) => {
   if (!session) {
     return (
       <Row>
-        <Nav.Item>
-          <NavLink to="/" className="nav-link mx-2">
-            Home
+        <Nav.Item className="border-right border-custom">
+          <NavLink to="/feed" className="nav-link mx-2" exact>
+            Feed
           </NavLink>
         </Nav.Item>
-        <Nav.Item>
+        <Nav.Item className="border-right border-custom">
           <NavLink to="/login" className="nav-link mx-2">
             Login
           </NavLink>
@@ -66,22 +72,22 @@ const NavInfo = connect(stateToProps)(({ session }) => {
     const eventNewPath = "/spaces/new";
     return (
       <Row>
-        <Nav.Item>
-          <NavLink to="/" className="nav-link mx-2">
-            Home
+        <Nav.Item className="border-right border-custom">
+          <NavLink to="/feed" className="nav-link mx-2">
+            Feed
           </NavLink>
         </Nav.Item>
-        <Nav.Item>
+        <Nav.Item className="border-right border-custom">
+          <NavLink to={eventNewPath} className="nav-link">
+            New Space
+          </NavLink>
+        </Nav.Item>
+        <Nav.Item className="border-right border-custom">
           <NavLink to={userShowPath} className="nav-link mx-2 text-capitalize">
             {session.name}
           </NavLink>
         </Nav.Item>
         <LogoutButton />
-        <Nav.Item>
-          <NavLink to={eventNewPath} className="nav-link">
-            Create New Study Space
-          </NavLink>
-        </Nav.Item>
       </Row>
     );
   }
@@ -92,7 +98,7 @@ const LogoutButton = connect()(({ dispatch }) => {
   const history = useHistory();
   function logoutUser() {
     const successAction = {
-      data: "Logout successfull",
+      data: "Logout successful",
       type: "success/set",
     };
 

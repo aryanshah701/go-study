@@ -11,7 +11,7 @@ defmodule ApiWeb.SpaceView do
   end
 
   def render("show_without_assoc.json", %{space: space}) do
-    %{data: render_one(space, SpaceView, "show_without_assoc.json")}
+    %{data: render_one(space, SpaceView, "space_without_assoc.json")}
   end
 
   def render("space.json", %{space: space}) do

@@ -1,4 +1,5 @@
 import { Row, Col, Form, Alert, Button, Card, Badge } from "react-bootstrap";
+import Fade from "react-bootstrap/Fade";
 import GooglePlacesAutocomplete from "react-google-places-autocomplete";
 
 import { useState, useEffect } from "react";
@@ -84,8 +85,15 @@ function NewSpace() {
 
   // Handle the case in which geolocation isn't enabled
   if (!position) {
+    // Dispatch loading alert
+    store.dispatch({
+      type: "info/set",
+      data:
+        "Locating Spaces nearby you. If you have location disabled, try enabling it and come back to this page",
+    });
+
     return (
-      <Row>
+      <Row className="my-5">
         <Col>
           <Row>
             <Col>
@@ -238,7 +246,9 @@ function Recommendations(props) {
             <h4>Recommended Spaces Near You</h4>
           </Col>
         </Row>
-        <Row className="d-flex align-items-stretch">{cards}</Row>
+        <Fade in={true}>
+          <Row className="d-flex align-items-stretch">{cards}</Row>
+        </Fade>
       </Col>
     </Row>
   );
