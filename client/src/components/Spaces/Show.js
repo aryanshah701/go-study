@@ -81,12 +81,12 @@ function SpaceInfo({ space, session, history }) {
             <h1>{space.name}</h1>
           </Col>
         </Row>
-        <Row className="my-3">
+        <Row className="my-2">
           <Col lg={6} md={9} xs={12}>
             {image}
           </Col>
         </Row>
-        <Row className="mt-5 border-top">
+        <Row className="">
           <Col>
             <SpaceDescription space={space} />
           </Col>
@@ -140,7 +140,7 @@ function SpaceDescription({ space }) {
   return (
     <Row className="p-3">
       <Col>
-        <Row className="justify-content-start">
+        <Row className="justify-content-start pb-3 border-bottom">
           <div className="mr-2">
             <Button>{wifiIcon}</Button>
           </div>
@@ -226,8 +226,12 @@ function FromTheAuthor({ description }) {
 function Hours({ hours }) {
   let hoursUI = null;
   if (hours) {
-    hoursUI = hours.map((timeStr) => {
-      return <ListGroup.Item className="p-1">{timeStr}</ListGroup.Item>;
+    hoursUI = hours.map((timeStr, idx) => {
+      return (
+        <ListGroup.Item key={idx} className="p-1">
+          {timeStr}
+        </ListGroup.Item>
+      );
     });
   }
 

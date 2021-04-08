@@ -2,7 +2,7 @@ defmodule ApiWeb.UserSocket do
   use Phoenix.Socket
 
   ## Channels
-  # channel "room:*", ApiWeb.RoomChannel
+  channel "space:*", ApiWeb.SpaceChannel
 
   # Socket params are passed from the client and can
   # be used to verify and authenticate a user. After
@@ -31,5 +31,13 @@ defmodule ApiWeb.UserSocket do
   #
   # Returning `nil` makes this socket anonymous.
   @impl true
-  def id(_socket), do: nil
+  def id(socket) do
+    user = socket.assigns[:user]
+    if user do
+      "user_socket":#{user.id}  
+    else
+      nil  
+    end
+  end
+
 end
