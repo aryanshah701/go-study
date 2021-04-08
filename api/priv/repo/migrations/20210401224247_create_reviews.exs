@@ -5,8 +5,8 @@ defmodule Api.Repo.Migrations.CreateReviews do
     create table(:reviews) do
       add :rating, :float, null: false
 
-      add :space_id, references(:users, on_delete: :nothing), null: false
-      add :user_id, references(:spaces, on_delete: :nothing), null: false
+      add :space_id, references(:spaces, on_delete: :nothing), null: false
+      add :user_id, references(:users, on_delete: :nothing), null: false
 
       timestamps()
     end

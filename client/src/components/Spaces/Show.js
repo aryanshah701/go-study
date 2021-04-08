@@ -15,19 +15,57 @@ import StarRatings from "react-star-ratings";
 import { FiWifiOff } from "react-icons/fi";
 import { FiWifi } from "react-icons/fi";
 
+import store from "../../store";
 import { useParams, useHistory } from "react-router-dom";
 import { connect } from "react-redux";
 import { fetchSpace } from "../../api";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { apiPostReview, apiPostComment, apiDeleteComment } from "../../api";
+import {
+  channelJoin,
+  pushNewComment,
+  pushDeleteComment,
+  channelLeave,
+} from "../../socket";
 
 // The SHOW event page
-function ShowEvent(props) {
+function ShowSpace(props) {
   // List of all spaces in the store
   const { spaces, session } = props;
 
   // Id of the space to render
   const { id } = useParams();
+
+  // Live state handled by web sockets
+  const [liveState, setLiveState] = useState(null);
+
+  // Join the Space's channel on page load, if the user is signed in
+  useEffect(() => {
+    if (session) {
+      // Join the channel
+      channelJoin(id, session.id, setLiveState);
+    }
+
+    // Leave the channel if it was joined
+    return () => {
+      if (liveState) {
+        channelLeave();
+      }
+    };
+  }, []);
+
+  // Handle errors from channel
+  useEffect(() => {
+    if (liveState && liveState.err && liveState.err !== "") {
+      // Dispatch an err
+      const errAction = {
+        type: "error/set",
+        data: liveState.err,
+      };
+
+      store.dispatch(errAction);
+    }
+  }, [liveState]);
 
   // For redirection
   const history = useHistory();
@@ -40,7 +78,12 @@ function ShowEvent(props) {
 
     if (storeSpace) {
       spaceInfo = (
-        <SpaceInfo space={storeSpace} session={session} history={history} />
+        <SpaceInfo
+          space={storeSpace}
+          session={session}
+          history={history}
+          liveState={liveState}
+        />
       );
     } else {
       // If the space isn't found, fetch it
@@ -68,7 +111,7 @@ function getSpace(spaces, id) {
   }
 }
 
-function SpaceInfo({ space, session, history }) {
+function SpaceInfo({ space, session, history, liveState }) {
   let image = null;
   if (space.photo !== "") {
     image = <Image className="image" src={space.photo} alt="..." fluid />;
@@ -81,21 +124,22 @@ function SpaceInfo({ space, session, history }) {
             <h1>{space.name}</h1>
           </Col>
         </Row>
-        <Row className="my-3">
+        <Row className="my-2">
           <Col lg={6} md={9} xs={12}>
             {image}
           </Col>
         </Row>
-        <Row className="mt-5 border-top">
+        <Row className="">
           <Col>
             <SpaceDescription space={space} />
           </Col>
         </Row>
         <Comments
-          comments={space.comments.data}
+          cachedComments={space.comments.data}
           space={space}
           session={session}
           history={history}
+          liveState={liveState}
         />
       </Col>
     </Row>
@@ -140,7 +184,7 @@ function SpaceDescription({ space }) {
   return (
     <Row className="p-3">
       <Col>
-        <Row className="justify-content-start">
+        <Row className="justify-content-start pb-3 border-bottom">
           <div className="mr-2">
             <Button>{wifiIcon}</Button>
           </div>
@@ -226,8 +270,12 @@ function FromTheAuthor({ description }) {
 function Hours({ hours }) {
   let hoursUI = null;
   if (hours) {
-    hoursUI = hours.map((timeStr) => {
-      return <ListGroup.Item className="p-1">{timeStr}</ListGroup.Item>;
+    hoursUI = hours.map((timeStr, idx) => {
+      return (
+        <ListGroup.Item key={idx} className="p-1">
+          {timeStr}
+        </ListGroup.Item>
+      );
     });
   }
 
@@ -274,15 +322,33 @@ function ReviewInput({ space }) {
 }
 
 // Comments display UI
-function Comments({ comments, space, session }) {
+function Comments({ cachedComments, space, session, liveState }) {
   // Deletes the comment
   function deleteComment(commentId) {
-    apiDeleteComment(commentId, space.id);
+    // Delete the comment from the DB
+    apiDeleteComment(commentId, space.id).then(() => {
+      // Get the new live state if the user is connected to the space's channel
+      if (liveState) {
+        pushDeleteComment();
+      }
+    });
   }
 
   // Checks if the logged in owner is authorised
   function commentOwner(comment) {
+    // If the user is not logged in
+    if (!session) {
+      return false;
+    }
     return session.id === comment.user_id;
+  }
+
+  // Either display the liveState comments or the cached comments
+  let comments = null;
+  if (liveState) {
+    comments = liveState.comments;
+  } else if (cachedComments) {
+    comments = cachedComments;
   }
 
   let commentList;
@@ -323,7 +389,7 @@ function Comments({ comments, space, session }) {
             <h3>Comments</h3>
           </Col>
         </Row>
-        <CommentForm space={space} />
+        <CommentForm space={space} liveState={liveState} session={session} />
         <Row>
           <Col>
             <Table hover>
@@ -336,14 +402,19 @@ function Comments({ comments, space, session }) {
   );
 }
 
-function CommentForm({ space }) {
+function CommentForm({ space, liveState, session }) {
   // Controlled comment form
   const [comment, setComment] = useState("");
 
   // Submits the comment
   function submitComment() {
-    // Post the comment
-    apiPostComment(comment, space.id);
+    if (liveState && session) {
+      // Update liveState if channel is connected
+      pushNewComment(comment);
+    } else {
+      // Else send a POST for the comment
+      apiPostComment(comment, space.id);
+    }
 
     // Clear the input field
     setComment("");
@@ -387,4 +458,4 @@ function stateToProps(state) {
   return { spaces: showSpaces, session: session };
 }
 
-export default connect(stateToProps)(ShowEvent);
+export default connect(stateToProps)(ShowSpace);

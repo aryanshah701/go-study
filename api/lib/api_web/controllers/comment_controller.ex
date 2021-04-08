@@ -60,7 +60,7 @@ defmodule ApiWeb.CommentController do
         "application/json; charset=UTF-8")
       |> send_resp(
         :unauthorized,
-        Jason,encode!(%{error: "You must be the owner of this comment."})
+        Jason.encode!(%{error: "You must be the owner of this comment."})
       )
     end
   end
