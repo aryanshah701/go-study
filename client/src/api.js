@@ -212,6 +212,81 @@ export async function apiPostReview(rating, spaceId) {
   return false;
 }
 
+export async function apiPostComment(commentBody, spaceId) {
+  // Ensure that the user is logged in
+  const state = store.getState();
+  const session = state.session;
+
+  if (!isLoggedIn(session)) {
+    return false;
+  }
+
+  const comment = {
+    body: commentBody,
+    space_id: spaceId,
+  };
+
+  const token = session.token;
+
+  const response = await postRequest("/comments", { comment: comment }, token);
+
+  // If comment was created successfully, then dispatch the updated store
+  if (response.data) {
+    const newSpace = response.data.space.data;
+    const action = {
+      type: "showSpaces/update",
+      data: newSpace,
+    };
+
+    store.dispatch(action);
+
+    return true;
+  }
+
+  // Else, dispatch an error
+  const errAction = {
+    type: "error/set",
+    data: "Oops, something went wrong with posting your comment",
+  };
+
+  store.dispatch(errAction);
+  return false;
+}
+
+// --------------------- DELETE REQUESTS --------------------------
+async function deleteRequest(endpoint, token = "") {
+  const options = {
+    method: "DELETE",
+    headers: {
+      "Content-Type": "application/json",
+      "x-auth": token,
+    },
+  };
+
+  const response = await fetch(apiUrl + endpoint, options);
+  return await response.json();
+}
+
+export async function apiDeleteComment(commentId, spaceId) {
+  const state = store.getState();
+  const session = state.session;
+
+  // Ensure that the user is logged in
+  if (!isLoggedIn(session)) {
+    return null;
+  }
+
+  const token = session.token;
+
+  try {
+    const response = await deleteRequest("/comments/" + commentId, token);
+  } catch (err) {
+    // Fetch the updated space
+    const space = await fetchSpace(spaceId);
+    return space.data;
+  }
+}
+
 // --------------------- GET REQUESTS -------------------------------
 // Fetches data from the API given the endpoint
 async function getRequest(endpoint, token) {

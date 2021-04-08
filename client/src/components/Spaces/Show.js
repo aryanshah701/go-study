@@ -16,7 +16,7 @@ import { useParams, useHistory } from "react-router-dom";
 import { connect } from "react-redux";
 import { fetchSpace } from "../../api";
 import { useState } from "react";
-import { apiPostReview } from "../../api";
+import { apiPostReview, apiPostComment, apiDeleteComment } from "../../api";
 
 // The SHOW event page
 function ShowEvent(props) {
@@ -179,14 +179,7 @@ function ReviewInput({ space }) {
 
   // Send review
   function sendReview(rating) {
-    console.log("Send rating: " + rating);
-    apiPostReview(rating, space.id).then((success) => {
-      if (success) {
-        console.log("review posted");
-      } else {
-        console.log("review err");
-      }
-    });
+    apiPostReview(rating, space.id);
   }
 
   return (
@@ -206,17 +199,10 @@ function ReviewInput({ space }) {
 }
 
 // Comments display UI
-function Comments({ comments, space, session, history }) {
+function Comments({ comments, space, session }) {
   // Deletes the comment
   function deleteComment(commentId) {
-    // apiDeleteComment(commentId).then((success) => {
-    //   if (success) {
-    //     window.location.reload();
-    //   } else {
-    //     console.log("comment not deleted");
-    //   }
-    // });
-    console.log("DeleteComment");
+    apiDeleteComment(commentId, space.id);
   }
 
   // Checks if the logged in owner is authorised
@@ -246,7 +232,7 @@ function Comments({ comments, space, session, history }) {
         <tr key={idx}>
           <td className="col-lg-6">{comment.body}</td>
           <td className="col-lg-3">
-            <Badge variant="info">by {comment.user}</Badge>
+            <Badge variant="primary">by {comment.user}</Badge>
           </td>
           {deleteButton}
         </tr>
@@ -262,7 +248,7 @@ function Comments({ comments, space, session, history }) {
             <h3>Comments</h3>
           </Col>
         </Row>
-        <CommentForm space={space} history={history} />
+        <CommentForm space={space} />
         <Row>
           <Col>
             <Table hover>
@@ -275,19 +261,14 @@ function Comments({ comments, space, session, history }) {
   );
 }
 
-function CommentForm({ space, history }) {
+function CommentForm({ space }) {
   // Controlled comment form
   const [comment, setComment] = useState("");
 
   // Submits the comment
   function submitComment() {
-    // Post the invite
-    // apiPostComment(comment, event.id).then((_success) => {
-    //   // Refresh the page with upadated event or error message
-    //   history.push("/events/" + event.id);
-    // });
-
-    console.log("Submit comment");
+    // Post the comment
+    apiPostComment(comment, space.id);
 
     // Clear the input field
     setComment("");

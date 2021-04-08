@@ -15,7 +15,7 @@ defmodule ApiWeb.CommentView do
   end
 
   def render("comment.json", %{comment: comment}) do
-    space_json = ApiWeb.SpaceView.render("show_without_assoc.json", space: comment.space)
+    space_json = ApiWeb.SpaceView.render("show.json", space: comment.space)
     user_json = ApiWeb.UserView.render("show_without_assoc.json", user: comment.user)
     
     %{id: comment.id,
@@ -26,7 +26,7 @@ defmodule ApiWeb.CommentView do
 
   def render("comment_without_assoc.json", %{comment: comment}) do
     # Preload nested data
-    comment = Comments.get_comment!(comment.id)
+    comment = Api.Comments.get_comment(comment.id)
 
     %{id: comment.id,
       body: comment.body,

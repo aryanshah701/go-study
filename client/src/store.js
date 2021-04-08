@@ -72,7 +72,6 @@ function showSpaces(state = [], action) {
       // Check if the space exists
       let newStateUpdate;
       if (state.some((space) => space.id === action.data.id)) {
-        console.log("Ther is dup");
         // Replace it
         newStateUpdate = replaceEvent(state, action.data);
       } else {
