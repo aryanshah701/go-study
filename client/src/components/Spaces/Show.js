@@ -15,6 +15,7 @@ import StarRatings from "react-star-ratings";
 import { FiWifiOff } from "react-icons/fi";
 import { FiWifi } from "react-icons/fi";
 
+import store from "../../store";
 import { useParams, useHistory } from "react-router-dom";
 import { connect } from "react-redux";
 import { fetchSpace } from "../../api";
@@ -53,9 +54,18 @@ function ShowSpace(props) {
     };
   }, []);
 
-  if (liveState) {
-    console.log("Comments: ", liveState);
-  }
+  // Handle errors from channel
+  useEffect(() => {
+    if (liveState && liveState.err && liveState.err !== "") {
+      // Dispatch an err
+      const errAction = {
+        type: "error/set",
+        data: liveState.err,
+      };
+
+      store.dispatch(errAction);
+    }
+  }, [liveState]);
 
   // For redirection
   const history = useHistory();

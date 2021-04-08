@@ -6,7 +6,8 @@ defmodule ApiWeb.SpaceChannel do
   alias ApiWeb.CommentView
 
   @impl true
-  def join("space:" <> space_id, %{"user_id" => user_id}, socket) do
+  def join("space:" <> space_id, _payload, socket) do
+    user_id = socket.assigns.user_id
     if authorized?(user_id) do
       # Send back the all the comments for the given space
       space = Spaces.get_space(space_id)
@@ -60,7 +61,11 @@ defmodule ApiWeb.SpaceChannel do
   end
 
   # Add authorization logic here as required.
-  defp authorized?(_payload) do
-    true
+  def authorized?(user_id) do
+    if user_id do
+      true
+    else
+      false
+    end
   end
 end

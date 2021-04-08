@@ -1,35 +1,59 @@
 import { Socket } from "phoenix";
+import store from "./store";
 
 const socketUrl =
   process.env.NODE_ENV === "production"
     ? "ws://gostudy-api.aryanshah.tech/socket/"
     : "ws://localhost:4000/socket/";
 
-let socket = new Socket(socketUrl, { params: { token: "" } });
-
-socket.connect();
-
-// Creating channel with name of the game
+const state = store.getState();
+const session = state.session;
+let token = "";
+let socket = null;
 let channel = null;
+let callback = null;
 
 // Initialising state and set state callback
 let liveState = {
   comments: [],
+  err: "",
 };
 
-let callback = null;
+// If the user is logged in, provide live view
+if (session && session.token) {
+  token = session.token;
+  socket = new Socket(socketUrl, { params: { token: token } });
+  socket.connect();
+}
 
 // Update the comments by calling the callback function
 function updateComments(updatedComments) {
   liveState = {
+    ...liveState,
     comments: updatedComments.data,
   };
 
   callback(liveState);
 }
 
+// Handle errors from the server
+function handleError(err) {
+  console.log("Something went wrong with channel: ", err);
+
+  if (err.reason) {
+    liveState = {
+      ...liveState,
+      err: err.reason,
+    };
+  }
+}
+
 // Join the Space's channel to receive live updates
 export function channelJoin(spaceId, userId, setLiveState) {
+  if (!socket) {
+    return;
+  }
+
   callback = setLiveState;
 
   // Create and join the new channel
@@ -37,9 +61,7 @@ export function channelJoin(spaceId, userId, setLiveState) {
   channel
     .join()
     .receive("ok", (comments) => updateComments(comments))
-    .receive("error", (err) =>
-      console.log("Unable to join the channel: ", err)
-    );
+    .receive("error", (err) => handleError(err));
 
   // Listen to broadcasts
   channel.on("new_comment", (comments) => {
@@ -57,6 +79,10 @@ export function channelJoin(spaceId, userId, setLiveState) {
 
 // Pushed a new comment event
 export function pushNewComment(commentBody) {
+  if (!socket) {
+    return;
+  }
+
   channel
     .push("new_comment", { body: commentBody })
     .receive("ok", (comments) => updateComments(comments))
@@ -67,6 +93,10 @@ export function pushNewComment(commentBody) {
 
 // Essentially just pushes to get the updated state
 export function pushDeleteComment() {
+  if (!socket) {
+    return;
+  }
+
   channel
     .push("delete_comment", {})
     .receive("ok", (comments) => updateComments(comments))
@@ -77,5 +107,9 @@ export function pushDeleteComment() {
 
 // Leaves the channel and unsubscribes from all the channel events
 export function channelLeave() {
+  if (!socket) {
+    return;
+  }
+
   channel.leave().receive("ok", () => console.log("you have left the channel"));
 }
