@@ -17,5 +17,7 @@ defmodule Api.Reviews.Review do
     review
     |> cast(attrs, [:rating, :user_id, :space_id])
     |> validate_required([:rating, :user_id, :space_id])
+    |> foreign_key_constraint(:space_id)
+    |> foreign_key_constraint(:user_id)
   end
 end

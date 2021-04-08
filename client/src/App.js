@@ -5,6 +5,7 @@ import { Container, Row, Col } from "react-bootstrap";
 // React router and components
 import { Switch, Route } from "react-router-dom";
 import NavBar from "./components/Nav";
+import Landing from "./components/Landing";
 import Feed from "./components/Feed";
 import Login from "./components/Users/Login";
 import NewUser from "./components/Users/New";
@@ -21,6 +22,9 @@ function App() {
       </Row>
       <Switch>
         <Route path="/" exact>
+          <Landing />
+        </Route>
+        <Route path="/feed" exact>
           <Feed />
         </Route>
         <Route path="/login" exact>

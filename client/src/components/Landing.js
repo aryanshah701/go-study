@@ -2,7 +2,7 @@ import {Row, Col} from 'react-bootstrap';
 
 function Landing() {
   return (
-    <Row>
+    <Row className="my-5">
       <Col>
         <h1>Welcome to GoStudy!</h1>
       </Col>

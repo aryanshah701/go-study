@@ -25,6 +25,7 @@ defmodule ApiWeb.CommentController do
     |> Map.put("user_id", user.id)
 
     with {:ok, %Comment{} = comment} <- Comments.create_comment(comment_params) do
+      comment = Api.Comments.get_comment(comment.id)
       conn
       |> put_status(:created)
       |> put_resp_header("location", Routes.comment_path(conn, :show, comment))

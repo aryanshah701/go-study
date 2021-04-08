@@ -50,7 +50,7 @@ defmodule Api.Comments do
   def get_comment(id) do
     comment = Repo.get(Comment, id)
     |> Repo.preload(:user)
-    |> Repo.preload(:event)
+    |> Repo.preload(:space)
 
     space = Api.Spaces.get_space(comment.space_id)
     comment = Map.replace(comment, :space, space)

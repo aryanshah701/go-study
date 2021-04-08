@@ -15,12 +15,10 @@ defmodule ApiWeb.ReviewView do
   end
 
   def render("review.json", %{review: review}) do
-  user_json = ApiWeb.UserView.render("show_without_assoc.json", user: review.user)
-  space_json = ApiWeb.SpaceView.render("show_without_assoc.json", space: review.space)
+  space_json = ApiWeb.SpaceView.render("show.json", space: review.space)
 
     %{id: review.id,
       rating: review.rating,
-      user: user_json,
       space: space_json}
   end
 

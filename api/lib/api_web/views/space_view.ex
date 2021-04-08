@@ -11,7 +11,7 @@ defmodule ApiWeb.SpaceView do
   end
 
   def render("show_without_assoc.json", %{space: space}) do
-    %{data: render_one(space, SpaceView, "show_without_assoc.json")}
+    %{data: render_one(space, SpaceView, "space_without_assoc.json")}
   end
 
   def render("space.json", %{space: space}) do
@@ -24,7 +24,13 @@ defmodule ApiWeb.SpaceView do
       longitude: space.longitude,
       wifi: space.wifi,
       comments: comments_json,
-      avg_rating: space.avg_rating}
+      avg_rating: space.avg_rating,
+      address: space.address,
+      opening_hours: space.opening_hours,
+      website: space.website,
+      photo: space.photo,
+      type: space.type,
+      google_rating: space.google_rating}
   end
 
   def render("space_without_assoc.json", %{space: space}) do

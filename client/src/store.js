@@ -1,7 +1,6 @@
 // File for redux reducer functions
 import { createStore, combineReducers } from "redux";
 
-
 // User reducer(authenticated user data)
 function user(state = null, action) {
   switch (action.type) {
@@ -60,8 +59,59 @@ function session(state = loadSession(), action) {
   }
 }
 
+// Spaces reducer
+function showSpaces(state = [], action) {
+  switch (action.type) {
+    case "showSpaces/set":
+      return action.data;
+    case "showSpaces/add":
+      const newStateAdd = state.concat([action.data]);
+      return newStateAdd;
+    case "showSpaces/update":
+      console.log("Updating store: ", state, action);
+      // Check if the space exists
+      let newStateUpdate;
+      if (state.some((space) => space.id === action.data.id)) {
+        // Replace it
+        newStateUpdate = replaceEvent(state, action.data);
+      } else {
+        // Add it
+        newStateUpdate = state.concat([action.data]);
+      }
+      return newStateUpdate;
+    case "session/logout":
+      return [];
+    default:
+      return state;
+  }
+}
+
+// Replace a space within the given state with the new space
+function replaceEvent(state, newSpace) {
+  // Clone the state to prevent mutating
+  const clonedState = state.slice();
+
+  // Find the index of the space that needs to be replaced
+  const index = clonedState.findIndex((space) => space.id === newSpace.id);
+
+  // Replace the space
+  clonedState.splice(index, 1, newSpace);
+
+  return clonedState;
+}
+
 // Error flash reducer
 function error(state = "", action) {
+  switch (action.type) {
+    case "error/set":
+      return action.data;
+    default:
+      return null;
+  }
+}
+
+// Info flash reducer
+function info(stat = "", action) {
   switch (action.type) {
     case "error/set":
       return action.data;
@@ -85,8 +135,10 @@ function rootReducer(state, action) {
   const reducers = combineReducers({
     session,
     user,
+    showSpaces,
     error,
     success,
+    info,
   });
 
   const updatedState = reducers(state, action);
