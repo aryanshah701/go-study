@@ -46,6 +46,10 @@ export function channelJoin(spaceId, userId, setLiveState) {
     updateComments(comments);
   });
 
+  channel.on("delete_comment", (comments) => {
+    updateComments(comments);
+  });
+
   // Hooks for debugging
   channel.onError(() => console.log("there was an error!"));
   channel.onClose(() => console.log("the channel has gone away gracefully"));
@@ -58,6 +62,16 @@ export function pushNewComment(commentBody) {
     .receive("ok", (comments) => updateComments(comments))
     .receive("error", (err) =>
       console.log("Something went wrong with creating your new comment: ", err)
+    );
+}
+
+// Essentially just pushes to get the updated state
+export function pushDeleteComment() {
+  channel
+    .push("delete_comment", {})
+    .receive("ok", (comments) => updateComments(comments))
+    .receive("error", (err) =>
+      console.log("Something went wrong when deleting the comment: ", err)
     );
 }
 

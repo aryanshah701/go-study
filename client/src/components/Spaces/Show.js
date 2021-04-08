@@ -20,7 +20,12 @@ import { connect } from "react-redux";
 import { fetchSpace } from "../../api";
 import { useState, useEffect } from "react";
 import { apiPostReview, apiPostComment, apiDeleteComment } from "../../api";
-import { channelJoin, pushNewComment, channelLeave } from "../../socket";
+import {
+  channelJoin,
+  pushNewComment,
+  pushDeleteComment,
+  channelLeave,
+} from "../../socket";
 
 // The SHOW event page
 function ShowSpace(props) {
@@ -42,7 +47,9 @@ function ShowSpace(props) {
 
     // Leave the channel if it was joined
     return () => {
-      channelLeave();
+      if (liveState) {
+        channelLeave();
+      }
     };
   }, []);
 
@@ -308,11 +315,21 @@ function ReviewInput({ space }) {
 function Comments({ cachedComments, space, session, liveState }) {
   // Deletes the comment
   function deleteComment(commentId) {
-    apiDeleteComment(commentId, space.id);
+    // Delete the comment from the DB
+    apiDeleteComment(commentId, space.id).then(() => {
+      // Get the new live state if the user is connected to the space's channel
+      if (liveState) {
+        pushDeleteComment();
+      }
+    });
   }
 
   // Checks if the logged in owner is authorised
   function commentOwner(comment) {
+    // If the user is not logged in
+    if (!session) {
+      return false;
+    }
     return session.id === comment.user_id;
   }
 

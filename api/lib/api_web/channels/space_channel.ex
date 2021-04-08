@@ -44,6 +44,21 @@ defmodule ApiWeb.SpaceChannel do
     {:reply, {:ok, comments_view}, socket}
   end
 
+  # Send the new and updated state when a comment is deleted
+  @impl true
+  def handle_in("delete_comment", _payload, socket) do
+    # Get the new list of comments
+    space_id = socket.assigns[:space_id]
+    space = Spaces.get_space(space_id);
+    comments_view = CommentView.render("index.json", comments: space.comments)
+
+    # Broacast the new list of comments
+    broadcast(socket, "delete_comment", comments_view)
+
+    # Send back the new list of comments
+    {:reply, {:ok, comments_view}, socket}
+  end
+
   # Add authorization logic here as required.
   defp authorized?(_payload) do
     true
