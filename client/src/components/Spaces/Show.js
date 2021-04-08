@@ -9,6 +9,7 @@ import {
   Badge,
   InputGroup,
   FormControl,
+  ListGroup,
 } from "react-bootstrap";
 import StarRatings from "react-star-ratings";
 import { FiWifiOff } from "react-icons/fi";
@@ -134,6 +135,8 @@ function SpaceDescription({ space }) {
     );
   }
 
+  const addressLink = getMapsLink(space.address);
+
   return (
     <Row className="p-3">
       <Col>
@@ -176,18 +179,71 @@ function SpaceDescription({ space }) {
             <ReviewInput space={space} />
           </div>
         </Row>
-        <Row className="mt-4 mb-2">
-          <Col>
-            <h3>From the author</h3>
+        <Row className="my-3">
+          <Col className="p-0">
+            <a
+              href={addressLink}
+              target="_blank"
+              rel="noreferrer"
+              className="link"
+            >
+              Address: {space.address}
+            </a>
           </Col>
         </Row>
-        <Row>
-          <Col>
-            <p>{space.description}</p>
-          </Col>
+        <Row className="my-3">
+          <FromTheAuthor description={space.description} />
+          <Hours hours={space.opening_hours} />
         </Row>
       </Col>
     </Row>
+  );
+}
+
+function getMapsLink(address) {
+  const linkAddress = address.replace(/\s/g, "+");
+  const mapsEndpoint = "https://www.google.com/maps/place/";
+  return mapsEndpoint + linkAddress;
+}
+
+// From the author description
+function FromTheAuthor({ description }) {
+  return (
+    <Col className="p-0">
+      <Row>
+        <Col>
+          <h4>Message from the author</h4>
+        </Col>
+      </Row>
+      <Row>
+        <Col>{description}</Col>
+      </Row>
+    </Col>
+  );
+}
+
+// Location and Hours UI
+function Hours({ hours }) {
+  let hoursUI = null;
+  if (hours) {
+    hoursUI = hours.map((timeStr) => {
+      return <ListGroup.Item className="p-1">{timeStr}</ListGroup.Item>;
+    });
+  }
+
+  return (
+    <Col lg={7}>
+      <Row>
+        <Col>
+          <h4>Hours</h4>
+        </Col>
+      </Row>
+      <Row>
+        <Col>
+          <ListGroup>{hoursUI}</ListGroup>
+        </Col>
+      </Row>
+    </Col>
   );
 }
 
