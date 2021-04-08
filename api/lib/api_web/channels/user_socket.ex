@@ -34,7 +34,7 @@ defmodule ApiWeb.UserSocket do
   def id(socket) do
     user = socket.assigns[:user]
     if user do
-      "user_socket":#{user.id}  
+      "user_socket:#{user.id}"
     else
       nil  
     end

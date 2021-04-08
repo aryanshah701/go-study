@@ -18,16 +18,37 @@ import { FiWifi } from "react-icons/fi";
 import { useParams, useHistory } from "react-router-dom";
 import { connect } from "react-redux";
 import { fetchSpace } from "../../api";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { apiPostReview, apiPostComment, apiDeleteComment } from "../../api";
+import { channelJoin, pushNewComment, channelLeave } from "../../socket";
 
 // The SHOW event page
-function ShowEvent(props) {
+function ShowSpace(props) {
   // List of all spaces in the store
   const { spaces, session } = props;
 
   // Id of the space to render
   const { id } = useParams();
+
+  // Live state handled by web sockets
+  const [liveState, setLiveState] = useState(null);
+
+  // Join the Space's channel on page load, if the user is signed in
+  useEffect(() => {
+    if (session) {
+      // Join the channel
+      channelJoin(id, session.id, setLiveState);
+    }
+
+    // Leave the channel if it was joined
+    return () => {
+      channelLeave();
+    };
+  }, []);
+
+  if (liveState) {
+    console.log("Comments: ", liveState);
+  }
 
   // For redirection
   const history = useHistory();
@@ -40,7 +61,12 @@ function ShowEvent(props) {
 
     if (storeSpace) {
       spaceInfo = (
-        <SpaceInfo space={storeSpace} session={session} history={history} />
+        <SpaceInfo
+          space={storeSpace}
+          session={session}
+          history={history}
+          liveState={liveState}
+        />
       );
     } else {
       // If the space isn't found, fetch it
@@ -68,7 +94,7 @@ function getSpace(spaces, id) {
   }
 }
 
-function SpaceInfo({ space, session, history }) {
+function SpaceInfo({ space, session, history, liveState }) {
   let image = null;
   if (space.photo !== "") {
     image = <Image className="image" src={space.photo} alt="..." fluid />;
@@ -96,6 +122,7 @@ function SpaceInfo({ space, session, history }) {
           space={space}
           session={session}
           history={history}
+          liveState={liveState}
         />
       </Col>
     </Row>
@@ -278,7 +305,7 @@ function ReviewInput({ space }) {
 }
 
 // Comments display UI
-function Comments({ comments, space, session }) {
+function Comments({ comments, space, session, liveState }) {
   // Deletes the comment
   function deleteComment(commentId) {
     apiDeleteComment(commentId, space.id);
@@ -327,7 +354,7 @@ function Comments({ comments, space, session }) {
             <h3>Comments</h3>
           </Col>
         </Row>
-        <CommentForm space={space} />
+        <CommentForm space={space} liveState={liveState} session={session} />
         <Row>
           <Col>
             <Table hover>
@@ -340,7 +367,7 @@ function Comments({ comments, space, session }) {
   );
 }
 
-function CommentForm({ space }) {
+function CommentForm({ space, liveState, session }) {
   // Controlled comment form
   const [comment, setComment] = useState("");
 
@@ -348,6 +375,11 @@ function CommentForm({ space }) {
   function submitComment() {
     // Post the comment
     apiPostComment(comment, space.id);
+
+    // Update liveState if channel is connected
+    if (liveState && session) {
+      pushNewComment(comment);
+    }
 
     // Clear the input field
     setComment("");
@@ -391,4 +423,4 @@ function stateToProps(state) {
   return { spaces: showSpaces, session: session };
 }
 
-export default connect(stateToProps)(ShowEvent);
+export default connect(stateToProps)(ShowSpace);
