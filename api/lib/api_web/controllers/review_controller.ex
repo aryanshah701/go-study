@@ -8,6 +8,12 @@ defmodule ApiWeb.ReviewController do
 
   plug ApiWeb.Plugs.RequireAuth, "en" when action in [:create, :update, :delete]
 
+  def review_owner?(conn, review) do
+    curr_user_id = conn.assigns[:user].id
+    owner_user_id = review.user_id
+    curr_user_id == owner_user_id
+  end
+
   def index(conn, _params) do
     reviews = Reviews.list_reviews()
     render(conn, "index.json", reviews: reviews)
@@ -44,8 +50,20 @@ defmodule ApiWeb.ReviewController do
   def delete(conn, %{"id" => id}) do
     review = Reviews.get_review!(id)
 
-    with {:ok, %Review{}} <- Reviews.delete_review(review) do
-      send_resp(conn, :no_content, "")
+    if review_owner?(conn, review) do
+      with {:ok, %Review{}} <- Reviews.delete_review(review) do
+        send_resp(conn, :no_content, "")
+      end
+    else
+      conn
+      |> put_resp_header(
+        "content-type",
+        "application/json; charset=UTF-8")
+      |> send_resp(
+        :unauthorized,
+        Jason.encode!(%{error: "You must be the owner of this review."})
+      )
     end
   end
+  
 end
