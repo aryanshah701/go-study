@@ -19,7 +19,7 @@ function NavBar(props) {
   }
 
   return (
-    <Row>
+    <Row className="position-sticky">
       <Col>
         <Row>
           <Col>{successAlert}</Col>

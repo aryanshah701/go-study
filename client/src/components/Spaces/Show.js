@@ -11,6 +11,8 @@ import {
   FormControl,
 } from "react-bootstrap";
 import StarRatings from "react-star-ratings";
+import { FiWifiOff } from "react-icons/fi";
+import { FiWifi } from "react-icons/fi";
 
 import { useParams, useHistory } from "react-router-dom";
 import { connect } from "react-redux";
@@ -68,7 +70,7 @@ function getSpace(spaces, id) {
 function SpaceInfo({ space, session, history }) {
   let image = null;
   if (space.photo !== "") {
-    image = <Image src={space.photo} alt="..." fluid />;
+    image = <Image className="image" src={space.photo} alt="..." fluid />;
   }
   return (
     <Row>
@@ -109,20 +111,37 @@ function SpaceDescription({ space }) {
 
   const spaceUrl = "https://go-study.aryanshah.tech/spaces/" + space.id;
 
+  let wifiIcon;
+  if (space.wifi) {
+    wifiIcon = <FiWifi />;
+  } else {
+    wifiIcon = <FiWifiOff />;
+  }
+
+  let websiteButton = null;
+  if (space.website !== "") {
+    websiteButton = (
+      <div className="mr-2">
+        <a
+          className="btn btn-primary"
+          href={space.website}
+          target="_blank"
+          rel="noreferrer"
+        >
+          Website
+        </a>
+      </div>
+    );
+  }
+
   return (
     <Row className="p-3">
       <Col>
         <Row className="justify-content-start">
           <div className="mr-2">
-            <a
-              className="btn btn-primary"
-              href={space.website}
-              target="_blank"
-              rel="noreferrer"
-            >
-              Website
-            </a>
+            <Button>{wifiIcon}</Button>
           </div>
+          {websiteButton}
           <div className="mr-2">
             <OverlayTrigger
               trigger="click"
@@ -140,13 +159,13 @@ function SpaceDescription({ space }) {
           </div>
           <div className="mr-2">
             <Button variant="primary">
-              Google <Badge variant="light">{space.google_rating}</Badge>
+              Google Rating <Badge variant="light">{space.google_rating}</Badge>
               <span className="sr-only">google's review</span>
             </Button>
           </div>
           <div className="mr-2">
             <Button variant="primary">
-              GoStudy{" "}
+              GoStudy Rating{" "}
               <Badge variant="light">
                 {space.avg_rating === 0 ? "NA" : space.avg_rating}
               </Badge>

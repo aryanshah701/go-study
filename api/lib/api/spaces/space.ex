@@ -33,6 +33,6 @@ defmodule Api.Spaces.Space do
     |> cast(attrs, [:name, :description, :latitude, :longitude, :wifi, 
       :user_id, :address, :google_rating, :opening_hours, :photo, :type, :website])
     |> validate_required([:name, :description, :latitude, :longitude, :wifi, 
-      :user_id, :address, :google_rating, :opening_hours, :type, :website])
+      :user_id, :address, :google_rating, :opening_hours, :type])
   end
 end

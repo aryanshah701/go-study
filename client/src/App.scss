@@ -4,6 +4,10 @@
 $base-color: black;
 $highlight-color: #5b54da;
 
+.image {
+  max-height: 400px;
+}
+
 .light {
   opacity: 85% !important;
   transition: background-color 0.7s ease;

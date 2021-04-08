@@ -155,6 +155,8 @@ export async function apiCreateSpace(space) {
     data: err,
   };
 
+  console.log("create space errors: ", response.errors);
+
   store.dispatch(errorAction);
 
   return null;
@@ -176,6 +178,8 @@ export async function apiPostReview(rating, spaceId) {
   if (!isLoggedIn(session)) {
     return false;
   }
+
+  console.log("Space id: ", spaceId);
 
   const review = {
     rating: rating,
@@ -279,7 +283,7 @@ export async function apiDeleteComment(commentId, spaceId) {
   const token = session.token;
 
   try {
-    const response = await deleteRequest("/comments/" + commentId, token);
+    await deleteRequest("/comments/" + commentId, token);
   } catch (err) {
     // Fetch the updated space
     const space = await fetchSpace(spaceId);
