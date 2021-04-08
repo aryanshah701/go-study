@@ -36,7 +36,6 @@ defmodule Api.Spaces do
 
   """
   def get_space!(id) do
-    IO.inspect id
     space = Repo.get!(Space, id)
     if space do
       # Preload spaces

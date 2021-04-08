@@ -1,0 +1,17 @@
+/* Custom boostrap */
+$base-color: black;
+$highlight-color: #5b54da;
+$body-color: #111;
+$nav-link-disabled-color: #111;
+
+$theme-colors: (
+  "light": white,
+  "dark": $highlight-color,
+  "primary": $highlight-color,
+  "warning": $highlight-color,
+  "success": #77dd77,
+  "info": #99cccc,
+);
+
+/* import bootstrap to set changes */
+@import "~bootstrap/scss/bootstrap";

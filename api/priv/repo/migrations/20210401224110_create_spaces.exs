@@ -9,11 +9,11 @@ defmodule Api.Repo.Migrations.CreateSpaces do
       add :longitude, :float, null: false
       add :wifi, :boolean, default: false, null: false
       add :user_id, references(:users, on_delete: :nothing), null: false
-      add :website, :string, null: false
+      add :website, :string, default: "", null: false
       add :address, :string, null: false
       add :google_rating, :float, null: false
       add :opening_hours, {:array, :string}, null: false
-      add :photo, :text, null: false
+      add :photo, :text, default: "", null: false
       add :type, :string, null: false
 
       timestamps()

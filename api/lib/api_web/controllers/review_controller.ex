@@ -14,7 +14,13 @@ defmodule ApiWeb.ReviewController do
   end
 
   def create(conn, %{"review" => review_params}) do
+    user = conn.assigns[:user]
+    review_params = Map.put(review_params, "user_id", user.id)
+
+    IO.inspect review_params
+
     with {:ok, %Review{} = review} <- Reviews.create_review(review_params) do
+      review = Reviews.load_review(review)
       conn
       |> put_status(:created)
       |> put_resp_header("location", Routes.review_path(conn, :show, review))

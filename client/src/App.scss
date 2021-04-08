@@ -1,5 +1,36 @@
-@import "~bootstrap/scss/bootstrap";
+@import "./custom.scss";
+@import url("https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@100;400;700&display=swap");
+
+$base-color: black;
+$highlight-color: #5b54da;
+
+.image {
+  max-height: 400px;
+}
 
 .light {
-  opacity: 90% !important;
+  opacity: 85% !important;
+  transition: background-color 0.7s ease;
+}
+
+.navbar {
+  padding: 0;
+}
+
+.nav-link {
+  color: $base-color;
+  font-size: 1.5rem;
+}
+
+.nav-link:hover {
+  color: $highlight-color;
+}
+
+.border-custom {
+  border-width: 2px !important;
+  border-color: $highlight-color !important;
+}
+
+body {
+  font-family: "IBM Plex Sans", sans-serif;
 }
