@@ -118,7 +118,7 @@ function SpaceInfo({ space, session, history, liveState }) {
           </Col>
         </Row>
         <Comments
-          comments={space.comments.data}
+          cachedComments={space.comments.data}
           space={space}
           session={session}
           history={history}
@@ -305,7 +305,7 @@ function ReviewInput({ space }) {
 }
 
 // Comments display UI
-function Comments({ comments, space, session, liveState }) {
+function Comments({ cachedComments, space, session, liveState }) {
   // Deletes the comment
   function deleteComment(commentId) {
     apiDeleteComment(commentId, space.id);
@@ -314,6 +314,14 @@ function Comments({ comments, space, session, liveState }) {
   // Checks if the logged in owner is authorised
   function commentOwner(comment) {
     return session.id === comment.user_id;
+  }
+
+  // Either display the liveState comments or the cached comments
+  let comments = null;
+  if (liveState) {
+    comments = liveState.comments;
+  } else if (cachedComments) {
+    comments = cachedComments;
   }
 
   let commentList;
@@ -373,12 +381,12 @@ function CommentForm({ space, liveState, session }) {
 
   // Submits the comment
   function submitComment() {
-    // Post the comment
-    apiPostComment(comment, space.id);
-
-    // Update liveState if channel is connected
     if (liveState && session) {
+      // Update liveState if channel is connected
       pushNewComment(comment);
+    } else {
+      // Else send a POST for the comment
+      apiPostComment(comment, space.id);
     }
 
     // Clear the input field
