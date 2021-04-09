@@ -1,5 +1,5 @@
-import { Row, Col, Card, Alert, Button, Badge } from "react-bootstrap";
-import { GoogleMap, Marker, InfoWindow } from "@react-google-maps/api";
+import { Row, Col, Card, Alert, Badge } from "react-bootstrap";
+import { GoogleMap, Marker } from "@react-google-maps/api";
 import { FiWifiOff } from "react-icons/fi";
 import { FiWifi } from "react-icons/fi";
 
@@ -79,7 +79,6 @@ function Map({ position, spaces }) {
 
   const currentLocationMarker = <Marker position={position} />;
   let spaceMarkers = null;
-  let spaceInfoWindows = null;
 
   if (spaces) {
     spaceMarkers = spaces.map((space, idx) => {
@@ -95,19 +94,6 @@ function Map({ position, spaces }) {
           label={label}
           onClick={() => history.push("/spaces/" + space.data.id)}
         />
-      );
-    });
-
-    spaceInfoWindows = spaces.map((space, idx) => {
-      const position = {
-        lat: space.data.latitude,
-        lng: space.data.longitude,
-      };
-
-      return (
-        <InfoWindow key={idx} position={position}>
-          <p>{space.data.name}</p>
-        </InfoWindow>
       );
     });
   }

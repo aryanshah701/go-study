@@ -4,6 +4,16 @@
 $base-color: black;
 $highlight-color: #5b54da;
 
+html,
+body {
+  font-family: "IBM Plex Sans", sans-serif;
+  height: 100%;
+}
+
+#brand {
+  color: $highlight-color;
+}
+
 .image {
   max-height: 400px;
 }
@@ -39,10 +49,19 @@ $highlight-color: #5b54da;
   opacity: 95%;
 }
 
-body {
-  font-family: "IBM Plex Sans", sans-serif;
+.landing {
+  margin-top: 12%;
 }
 
-#brand {
+.jumbotron {
+  background-color: white;
+}
+
+.highlight-title {
   color: $highlight-color;
+  font-size: 4rem;
+}
+
+.highlight-paragraph {
+  font-size: 1.5rem;
 }

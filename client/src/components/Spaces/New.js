@@ -50,7 +50,7 @@ function NewSpace({ position }) {
 
   // Show error message if browser is firefox
   useEffect(() => {
-    if (navigator.userAgent.indexOf("Firefox") != -1) {
+    if (navigator.userAgent.indexOf("Firefox") !== -1) {
       const errAction = {
         type: "error/set",
         data: "Sorry, the autocomplete feature doesn't work on Firefox",
