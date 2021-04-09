@@ -31,6 +31,7 @@ defmodule ApiWeb.CommentView do
     %{id: comment.id,
       body: comment.body,
       user_id: comment.user_id,
-      user: comment.user.name}
+      user: comment.user.name,
+      space_id: comment.space_id}
   end
 end

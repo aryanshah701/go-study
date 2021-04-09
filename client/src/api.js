@@ -306,39 +306,6 @@ async function getRequest(endpoint, token) {
   return await response.json();
 }
 
-// Fetch all user data and dispatch it to the store
-export function fetchUserData() {
-  const state = store.getState();
-  const session = state.session;
-
-  // If the user is not logged in, dispatch error
-  if (!isLoggedIn(session)) {
-    return false;
-  }
-
-  const userId = session.id;
-  const token = session.token;
-
-  // Make the get request and dispatch the data if successful
-  const isSuccess = getRequest("/users/" + userId, token)
-    .then((userData) => {
-      const action = {
-        type: "user/set",
-        data: userData,
-      };
-
-      store.dispatch(action);
-
-      return true;
-    })
-    .catch((err) => {
-      console.log("err", err);
-      return false;
-    });
-
-  return isSuccess;
-}
-
 // Fetches the nearby recommended places for a user to add
 export async function fetchRecommendation(position) {
   const state = store.getState();
@@ -455,10 +422,46 @@ function handleError(err) {
   store.dispatch(errAction);
 }
 
+// Fetches the position of the user using the geoLocation API
 export function fetchPosition() {
   if ("geolocation" in navigator) {
     navigator.geolocation.getCurrentPosition(setLocation, handleError, {
       timeout: 10000,
     });
   }
+}
+
+// Fetches the user's details
+export async function fetchUserData() {
+  const state = store.getState();
+  const session = state.session;
+
+  // If the user is not logged in, dispatch error
+  if (!isLoggedIn(session)) {
+    return null;
+  }
+
+  // Fetch the user's data
+  const token = session.token;
+  const endpoint = "/users/" + session.id;
+  const response = await getRequest(endpoint, token);
+
+  if (response.data) {
+    // Dispatch the user information
+    const action = {
+      type: "user/set",
+      data: response.data,
+    };
+
+    store.dispatch(action);
+    return true;
+  }
+
+  // Dispatch an unautherised error
+  const errAction = {
+    type: "error/set",
+    data: "Something went wrong",
+  };
+
+  return false;
 }

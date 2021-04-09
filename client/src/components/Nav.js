@@ -2,6 +2,7 @@ import { Nav, Navbar, Row, Col, Alert } from "react-bootstrap";
 import { NavLink, useHistory } from "react-router-dom";
 import { connect } from "react-redux";
 import store from "../store";
+import { fetchUserData } from "../api";
 
 // Navbar component
 function NavBar(props) {
@@ -85,7 +86,13 @@ const NavInfo = connect(stateToProps)(({ session }) => {
           </NavLink>
         </Nav.Item>
         <Nav.Item className="border-right border-custom">
-          <NavLink to={userShowPath} className="nav-link mx-2 text-capitalize">
+          <NavLink
+            onClick={() => {
+              fetchUserData();
+            }}
+            to={userShowPath}
+            className="nav-link mx-2 text-capitalize"
+          >
             {session.name}
           </NavLink>
         </Nav.Item>
