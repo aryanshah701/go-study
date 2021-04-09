@@ -12,6 +12,7 @@ import NewUser from "./components/Users/New";
 import ShowUser from "./components/Users/Show";
 import NewSpace from "./components/Spaces/New";
 import ShowSpace from "./components/Spaces/Show";
+import Footer from "./components/Footer";
 
 function App() {
   return (
@@ -44,6 +45,7 @@ function App() {
           <ShowSpace />
         </Route>
       </Switch>
+      <Footer />
     </Container>
   );
 }

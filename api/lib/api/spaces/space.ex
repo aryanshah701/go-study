@@ -16,6 +16,7 @@ defmodule Api.Spaces.Space do
     field :type, :string, default: ""
     field :website, :string, default: ""
     field :place_id, :string
+    field :photo_attr, :string, default: ""
 
     # Virtual fields
     field :avg_rating, :float, virtual: true
@@ -32,7 +33,7 @@ defmodule Api.Spaces.Space do
   def changeset(space, attrs) do
     space
     |> cast(attrs, [:name, :description, :latitude, :longitude, :wifi, 
-      :user_id, :address, :google_rating, :opening_hours, :photo, :type, :website, :place_id])
+      :user_id, :address, :google_rating, :opening_hours, :photo, :type, :website, :place_id, :photo_attr])
     |> validate_required([:name, :description, :latitude, :longitude, :wifi, 
       :user_id, :address, :google_rating, :opening_hours, :type, :place_id])
     |> unique_constraint(:place_id)

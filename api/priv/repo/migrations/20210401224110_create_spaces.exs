@@ -16,6 +16,7 @@ defmodule Api.Repo.Migrations.CreateSpaces do
       add :photo, :text, default: "", null: false
       add :type, :string, null: false
       add :place_id, :string, null: false
+      add :photo_attr, :text, default: "", null: false
 
       timestamps()
     end

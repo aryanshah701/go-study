@@ -363,6 +363,11 @@ function SearchForm(props) {
       address: place.formatted_address,
       google_rating: place.rating ? place.rating : 0,
       photo: place.photos ? place.photos[0].getUrl() : "",
+      photo_attr: place.photos
+        ? place.photos[0].html_attributions
+          ? place.photos[0].html_attributions[0]
+          : ""
+        : "",
       opening_hours: place.opening_hours
         ? place.opening_hours.weekday_text
         : [],
