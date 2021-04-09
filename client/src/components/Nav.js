@@ -1,4 +1,5 @@
 import { Nav, Navbar, Row, Col, Alert } from "react-bootstrap";
+
 import { NavLink, useHistory } from "react-router-dom";
 import { connect } from "react-redux";
 import store from "../store";
@@ -20,7 +21,7 @@ function NavBar(props) {
   }
 
   return (
-    <Row className="position-sticky">
+    <Row>
       <Col>
         <Row>
           <Col>{successAlert}</Col>
@@ -30,7 +31,7 @@ function NavBar(props) {
         </Row>
         <Row>
           <Col>
-            <Navbar bg="light" as="ul">
+            <Navbar as="ul">
               <NavLink
                 id="brand"
                 to="/"
