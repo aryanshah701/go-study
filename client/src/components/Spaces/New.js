@@ -48,6 +48,18 @@ function NewSpace({ position }) {
     }
   }, [position]);
 
+  // Show error message if browser is firefox
+  useEffect(() => {
+    if (navigator.userAgent.indexOf("Firefox") != -1) {
+      const errAction = {
+        type: "error/set",
+        data: "Sorry, the autocomplete feature doesn't work on Firefox",
+      };
+
+      store.dispatch(errAction);
+    }
+  }, []);
+
   // Get the recommended places once the geolocation is obtained
   useEffect(() => {
     if (position) {
@@ -349,11 +361,13 @@ function SearchForm(props) {
     setSpace({
       name: place.name,
       address: place.formatted_address,
-      google_rating: place.rating,
+      google_rating: place.rating ? place.rating : 0,
       photo: place.photos ? place.photos[0].getUrl() : "",
-      opening_hours: place.opening_hours.weekday_text,
+      opening_hours: place.opening_hours
+        ? place.opening_hours.weekday_text
+        : [],
       type: place.types[0],
-      website: place.website,
+      website: place.website ? place.website : "",
       latitude: place.geometry.location.lat(),
       longitude: place.geometry.location.lng(),
       place_id: searchedSpace.value.place_id,
@@ -401,7 +415,7 @@ function SearchForm(props) {
                   autocompletionRequest={{
                     location: {
                       lat: position.lat,
-                      lng: position.long,
+                      lng: position.lng,
                     },
                     radius: RADIUS,
                     componentRestrictions: {
