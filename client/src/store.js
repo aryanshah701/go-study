@@ -7,7 +7,6 @@ function user(state = null, action) {
     case "user/set":
       return action.data;
     case "session/logout":
-      console.log("Clearing cached user data");
       return null;
     default:
       return state;
@@ -68,7 +67,6 @@ function showSpaces(state = [], action) {
       const newStateAdd = state.concat([action.data]);
       return newStateAdd;
     case "showSpaces/update":
-      console.log("Updating store: ", state, action);
       // Check if the space exists
       let newStateUpdate;
       if (state.some((space) => space.id === action.data.id)) {

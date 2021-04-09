@@ -155,8 +155,6 @@ export async function apiCreateSpace(space) {
     data: err,
   };
 
-  console.log("create space errors: ", response.errors);
-
   store.dispatch(errorAction);
 
   return null;
@@ -165,6 +163,11 @@ export async function apiCreateSpace(space) {
 function getCreateSpaceError(errors) {
   if (errors.description) {
     return "Description: " + errors.description[0];
+  } else if (
+    errors.place_id &&
+    errors.place_id[0] === "has already been taken"
+  ) {
+    return "Sorry this space has already been created";
   } else {
     return "Something went wrong when creating the Space";
   }

@@ -356,6 +356,7 @@ function SearchForm(props) {
       website: place.website,
       latitude: place.geometry.location.lat(),
       longitude: place.geometry.location.lng(),
+      place_id: searchedSpace.value.place_id,
     });
 
     return place;
@@ -460,7 +461,7 @@ function isUserInputValid(userInput) {
 
 // Ensures that the space object has all required fields after a getDetails call
 function spaceObjectHasRequiredFields(space) {
-  return space && space.name;
+  return space && space.name && space.place_id;
 }
 
 function stateToProps(state) {
