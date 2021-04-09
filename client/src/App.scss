@@ -4,6 +4,15 @@
 $base-color: black;
 $highlight-color: #5b54da;
 
+body {
+  font-family: "IBM Plex Sans", sans-serif;
+  height: 100%;
+}
+
+#brand {
+  color: $highlight-color;
+}
+
 .image {
   max-height: 400px;
 }
@@ -31,6 +40,27 @@ $highlight-color: #5b54da;
   border-color: $highlight-color !important;
 }
 
-body {
-  font-family: "IBM Plex Sans", sans-serif;
+.web-link {
+  color: white;
+}
+
+.badge-link:hover {
+  opacity: 95%;
+}
+
+.landing {
+  margin-top: 12%;
+}
+
+.jumbotron {
+  background-color: white;
+}
+
+.highlight-title {
+  color: $highlight-color;
+  font-size: 4rem;
+}
+
+.highlight-paragraph {
+  font-size: 1.5rem;
 }

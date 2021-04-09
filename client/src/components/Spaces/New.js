@@ -3,9 +3,16 @@ import Fade from "react-bootstrap/Fade";
 import GooglePlacesAutocomplete from "react-google-places-autocomplete";
 
 import { useState, useEffect } from "react";
-import { apiCreateSpace, fetchRecommendation, fetchSpace } from "../../api";
+import {
+  apiCreateSpace,
+  fetchRecommendation,
+  fetchSpace,
+  fetchSpacesData,
+  fetchPosition,
+} from "../../api";
 import store from "../../store";
 import { useHistory } from "react-router-dom";
+import { connect } from "react-redux";
 
 // Search radius in miles
 const RADIUS = 10;
@@ -14,10 +21,7 @@ const RADIUS = 10;
 const google = window.google;
 
 // Create a new space page
-function NewSpace() {
-  // State for the position
-  const [position, setPosition] = useState(null);
-
+function NewSpace({ position }) {
   // State for the recommended spaces
   const [recommendations, setRecommendations] = useState(null);
 
@@ -36,33 +40,24 @@ function NewSpace() {
   // State for whether the form has been submitted
   const [submitted, setSubmitted] = useState(false);
 
-  // Function to set the user's location as state
-  function setLocation(position) {
-    const coords = position.coords;
-    setPosition({
-      lat: coords.latitude,
-      long: coords.longitude,
-    });
-  }
-
-  // Function to handle the user denying location access
-  function handleError(err) {
-    // Set the Position to null to indicate an err
-    setPosition(null);
-  }
-
   // Get the user's geolocation on component load
   useEffect(() => {
-    if ("geolocation" in navigator) {
-      navigator.geolocation.getCurrentPosition(setLocation, handleError, {
-        timeout: 10000,
-      });
+    if (!position) {
+      console.log("No position");
+      fetchPosition();
     }
+  }, [position]);
 
-    // Cleanup
-    return () => {
-      setPosition(null);
-    };
+  // Show error message if browser is firefox
+  useEffect(() => {
+    if (navigator.userAgent.indexOf("Firefox") !== -1) {
+      const errAction = {
+        type: "error/set",
+        data: "Sorry, the autocomplete feature doesn't work on Firefox",
+      };
+
+      store.dispatch(errAction);
+    }
   }, []);
 
   // Get the recommended places once the geolocation is obtained
@@ -88,13 +83,6 @@ function NewSpace() {
 
   // Handle the case in which geolocation isn't enabled
   if (!position) {
-    // Dispatch loading alert
-    store.dispatch({
-      type: "info/set",
-      data:
-        "Locating Spaces nearby you. If you have location disabled, try enabling it and come back to this page",
-    });
-
     return (
       <Row className="my-5">
         <Col>
@@ -122,13 +110,6 @@ function NewSpace() {
         <Row>
           <Col>
             <h1>Create a New Space</h1>
-          </Col>
-        </Row>
-        <Row>
-          <Col>
-            <p>
-              Latitude: {position.lat}, Longitude: {position.long}
-            </p>
           </Col>
         </Row>
         <Recommendations
@@ -248,7 +229,7 @@ function Recommendations(props) {
       <Col>
         <Row>
           <Col>
-            <h4>Recommended Spaces Near You</h4>
+            <h4>Trying to add any of these?</h4>
           </Col>
         </Row>
         <Fade in={true}>
@@ -312,6 +293,7 @@ function SearchForm(props) {
             fetchSpace(space.id).then((space) => {
               if (space) {
                 // Navigate to the space's page
+                fetchSpacesData();
                 history.push("/spaces/" + space.id);
               }
             });
@@ -379,13 +361,21 @@ function SearchForm(props) {
     setSpace({
       name: place.name,
       address: place.formatted_address,
-      google_rating: place.rating,
+      google_rating: place.rating ? place.rating : 0,
       photo: place.photos ? place.photos[0].getUrl() : "",
-      opening_hours: place.opening_hours.weekday_text,
+      photo_attr: place.photos
+        ? place.photos[0].html_attributions
+          ? place.photos[0].html_attributions[0]
+          : ""
+        : "",
+      opening_hours: place.opening_hours
+        ? place.opening_hours.weekday_text
+        : [],
       type: place.types[0],
-      website: place.website,
+      website: place.website ? place.website : "",
       latitude: place.geometry.location.lat(),
       longitude: place.geometry.location.lng(),
+      place_id: searchedSpace.value.place_id,
     });
 
     return place;
@@ -416,9 +406,8 @@ function SearchForm(props) {
             <h4>Manually Search for a Space</h4>
           </Col>
         </Row>
-        <Form>
+        <Form className="my-2">
           <Form.Group>
-            <Form.Label>Search for the space you wish to add</Form.Label>
             <Row>
               <Col>
                 <GooglePlacesAutocomplete
@@ -431,7 +420,7 @@ function SearchForm(props) {
                   autocompletionRequest={{
                     location: {
                       lat: position.lat,
-                      lng: position.long,
+                      lng: position.lng,
                     },
                     radius: RADIUS,
                     componentRestrictions: {
@@ -491,7 +480,12 @@ function isUserInputValid(userInput) {
 
 // Ensures that the space object has all required fields after a getDetails call
 function spaceObjectHasRequiredFields(space) {
-  return space && space.name;
+  return space && space.name && space.place_id;
 }
 
-export default NewSpace;
+function stateToProps(state) {
+  const { position } = state;
+  return { position: position };
+}
+
+export default connect(stateToProps)(NewSpace);

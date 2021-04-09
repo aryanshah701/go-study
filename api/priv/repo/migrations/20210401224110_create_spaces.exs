@@ -15,11 +15,16 @@ defmodule Api.Repo.Migrations.CreateSpaces do
       add :opening_hours, {:array, :string}, null: false
       add :photo, :text, default: "", null: false
       add :type, :string, null: false
+      add :place_id, :string, null: false
+      add :photo_attr, :text, default: "", null: false
 
       timestamps()
     end
 
     create index(:spaces, [:user_id])
+
+    # Places are unique by their google place id
+    create unique_index(:spaces, [:place_id])
   end
   
 end

@@ -15,7 +15,7 @@ defmodule ApiWeb.ReviewView do
   end
 
   def render("review.json", %{review: review}) do
-  space_json = ApiWeb.SpaceView.render("show.json", space: review.space)
+    space_json = ApiWeb.SpaceView.render("show.json", space: review.space)
 
     %{id: review.id,
       rating: review.rating,
@@ -23,7 +23,12 @@ defmodule ApiWeb.ReviewView do
   end
 
   def render("review_without_assoc.json", %{review: review}) do
+    space = Api.Spaces.get_space(review.space_id)
+
     %{id: review.id,
-      rating: review.rating}
+      rating: review.rating,
+      space_id: review.space_id,
+      space_name: space.name,
+      space_rating: space.avg_rating}
   end
 end

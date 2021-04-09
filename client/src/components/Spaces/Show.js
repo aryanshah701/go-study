@@ -14,6 +14,7 @@ import {
 import StarRatings from "react-star-ratings";
 import { FiWifiOff } from "react-icons/fi";
 import { FiWifi } from "react-icons/fi";
+import googleAttr from "../../powered_by_google_on_white.png";
 
 import store from "../../store";
 import { useParams, useHistory } from "react-router-dom";
@@ -113,8 +114,14 @@ function getSpace(spaces, id) {
 
 function SpaceInfo({ space, session, history, liveState }) {
   let image = null;
+  let attr = space.photo_attr !== "" ? space.photo_attr : null;
   if (space.photo !== "") {
-    image = <Image className="image" src={space.photo} alt="..." fluid />;
+    image = (
+      <div>
+        <Image className="image my-1" src={space.photo} alt="..." fluid />
+        Attribution: <span dangerouslySetInnerHTML={{ __html: attr }}></span>
+      </div>
+    );
   }
   return (
     <Row>

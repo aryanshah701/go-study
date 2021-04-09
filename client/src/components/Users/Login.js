@@ -27,7 +27,7 @@ function LoginUser() {
         const successFetch = fetchUserData();
 
         if (successFetch) {
-          history.push("/");
+          history.push("/feed");
         } else {
           history.push("/login");
         }

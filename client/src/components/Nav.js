@@ -1,7 +1,9 @@
 import { Nav, Navbar, Row, Col, Alert } from "react-bootstrap";
+
 import { NavLink, useHistory } from "react-router-dom";
 import { connect } from "react-redux";
 import store from "../store";
+import { fetchUserData } from "../api";
 
 // Navbar component
 function NavBar(props) {
@@ -19,7 +21,7 @@ function NavBar(props) {
   }
 
   return (
-    <Row className="position-sticky">
+    <Row>
       <Col>
         <Row>
           <Col>{successAlert}</Col>
@@ -29,8 +31,13 @@ function NavBar(props) {
         </Row>
         <Row>
           <Col>
-            <Navbar bg="light" as="ul">
-              <NavLink to="/" className="nav-link mx-2 mr-auto p-0" exact>
+            <Navbar as="ul">
+              <NavLink
+                id="brand"
+                to="/"
+                className="nav-link mx-2 mr-auto p-0"
+                exact
+              >
                 GoStudy
               </NavLink>
               <NavInfo />
@@ -80,7 +87,13 @@ const NavInfo = connect(stateToProps)(({ session }) => {
           </NavLink>
         </Nav.Item>
         <Nav.Item className="border-right border-custom">
-          <NavLink to={userShowPath} className="nav-link mx-2 text-capitalize">
+          <NavLink
+            onClick={() => {
+              fetchUserData();
+            }}
+            to={userShowPath}
+            className="nav-link mx-2 text-capitalize"
+          >
             {session.name}
           </NavLink>
         </Nav.Item>

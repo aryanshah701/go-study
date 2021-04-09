@@ -9,8 +9,10 @@ import Landing from "./components/Landing";
 import Feed from "./components/Feed";
 import Login from "./components/Users/Login";
 import NewUser from "./components/Users/New";
+import ShowUser from "./components/Users/Show";
 import NewSpace from "./components/Spaces/New";
 import ShowSpace from "./components/Spaces/Show";
+import Footer from "./components/Footer";
 
 function App() {
   return (
@@ -33,6 +35,9 @@ function App() {
         <Route path="/users/new" exact>
           <NewUser />
         </Route>
+        <Route path="/users/show" exact>
+          <ShowUser />
+        </Route>
         <Route path="/spaces/new" exact>
           <NewSpace />
         </Route>
@@ -40,6 +45,7 @@ function App() {
           <ShowSpace />
         </Route>
       </Switch>
+      <Footer />
     </Container>
   );
 }

@@ -7,7 +7,6 @@ function user(state = null, action) {
     case "user/set":
       return action.data;
     case "session/logout":
-      console.log("Clearing cached user data");
       return null;
     default:
       return state;
@@ -68,7 +67,6 @@ function showSpaces(state = [], action) {
       const newStateAdd = state.concat([action.data]);
       return newStateAdd;
     case "showSpaces/update":
-      console.log("Updating store: ", state, action);
       // Check if the space exists
       let newStateUpdate;
       if (state.some((space) => space.id === action.data.id)) {
@@ -81,6 +79,24 @@ function showSpaces(state = [], action) {
       return newStateUpdate;
     case "session/logout":
       return [];
+    default:
+      return state;
+  }
+}
+
+function spaces(state = null, action) {
+  switch (action.type) {
+    case "spaces/set":
+      return action.data;
+    default:
+      return state;
+  }
+}
+
+function position(state = null, action) {
+  switch (action.type) {
+    case "position/set":
+      return action.data;
     default:
       return state;
   }
@@ -136,6 +152,8 @@ function rootReducer(state, action) {
     session,
     user,
     showSpaces,
+    spaces,
+    position,
     error,
     success,
     info,

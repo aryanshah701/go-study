@@ -65,6 +65,7 @@ export function channelJoin(spaceId, userId, setLiveState) {
 
   // Listen to broadcasts
   channel.on("new_comment", (comments) => {
+    console.log("Broadcast: ", comments);
     updateComments(comments);
   });
 

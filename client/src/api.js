@@ -155,8 +155,6 @@ export async function apiCreateSpace(space) {
     data: err,
   };
 
-  console.log("create space errors: ", response.errors);
-
   store.dispatch(errorAction);
 
   return null;
@@ -165,6 +163,11 @@ export async function apiCreateSpace(space) {
 function getCreateSpaceError(errors) {
   if (errors.description) {
     return "Description: " + errors.description[0];
+  } else if (
+    errors.place_id &&
+    errors.place_id[0] === "has already been taken"
+  ) {
+    return "Sorry this space has already been created";
   } else {
     return "Something went wrong when creating the Space";
   }
@@ -306,39 +309,6 @@ async function getRequest(endpoint, token) {
   return await response.json();
 }
 
-// Fetch all user data and dispatch it to the store
-export function fetchUserData() {
-  const state = store.getState();
-  const session = state.session;
-
-  // If the user is not logged in, dispatch error
-  if (!isLoggedIn(session)) {
-    return false;
-  }
-
-  const userId = session.id;
-  const token = session.token;
-
-  // Make the get request and dispatch the data if successful
-  const isSuccess = getRequest("/users/" + userId, token)
-    .then((userData) => {
-      const action = {
-        type: "user/set",
-        data: userData,
-      };
-
-      store.dispatch(action);
-
-      return true;
-    })
-    .catch((err) => {
-      console.log("err", err);
-      return false;
-    });
-
-  return isSuccess;
-}
-
 // Fetches the nearby recommended places for a user to add
 export async function fetchRecommendation(position) {
   const state = store.getState();
@@ -356,7 +326,7 @@ export async function fetchRecommendation(position) {
     "/recommendations?" +
     new URLSearchParams({
       lat: position.lat,
-      lng: position.long,
+      lng: position.lng,
     });
 
   const response = await getRequest(uri, token);
@@ -399,4 +369,102 @@ export async function fetchSpace(id) {
   }
 
   return null;
+}
+
+export async function fetchSpacesData() {
+  // Make the get request and dispatch the data if successful
+  const response = await getRequest("/spaces/");
+
+  if (response.data) {
+    const action = {
+      type: "spaces/set",
+      data: response.data,
+    };
+
+    store.dispatch(action);
+    return true;
+  }
+
+  const errAction = {
+    type: "error/set",
+    action: "Something went wrong with fetching all the Spaces",
+  };
+
+  store.dispatch(errAction);
+
+  return false;
+}
+
+// Function to set the user's location as state
+function setLocation(geoPosition) {
+  const coords = geoPosition.coords;
+
+  const position = {
+    lat: coords.latitude,
+    lng: coords.longitude,
+  };
+
+  // Dispatch the position
+  const action = {
+    type: "position/set",
+    data: position,
+  };
+
+  store.dispatch(action);
+}
+
+// Function to handle the user denying location access
+function handleError(err) {
+  // Dispatch an error
+  const errAction = {
+    type: "err/set",
+    data:
+      "Seems like location is disabled. Try enabling it and revisiting the website.",
+  };
+
+  store.dispatch(errAction);
+}
+
+// Fetches the position of the user using the geoLocation API
+export function fetchPosition() {
+  if ("geolocation" in navigator) {
+    navigator.geolocation.getCurrentPosition(setLocation, handleError, {
+      timeout: 10000,
+    });
+  }
+}
+
+// Fetches the user's details
+export async function fetchUserData() {
+  const state = store.getState();
+  const session = state.session;
+
+  // If the user is not logged in, dispatch error
+  if (!isLoggedIn(session)) {
+    return null;
+  }
+
+  // Fetch the user's data
+  const token = session.token;
+  const endpoint = "/users/" + session.id;
+  const response = await getRequest(endpoint, token);
+
+  if (response.data) {
+    // Dispatch the user information
+    const action = {
+      type: "user/set",
+      data: response.data,
+    };
+
+    store.dispatch(action);
+    return true;
+  }
+
+  // Dispatch an unautherised error
+  const errAction = {
+    type: "error/set",
+    data: "Something went wrong",
+  };
+
+  return false;
 }

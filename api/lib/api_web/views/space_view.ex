@@ -30,15 +30,21 @@ defmodule ApiWeb.SpaceView do
       website: space.website,
       photo: space.photo,
       type: space.type,
-      google_rating: space.google_rating}
+      google_rating: space.google_rating,
+      photo_attr: space.photo_attr}
   end
 
   def render("space_without_assoc.json", %{space: space}) do
+    space = Api.Spaces.get_space(space.id)
     %{id: space.id,
       name: space.name,
       description: space.description,
       latitude: space.latitude,
       longitude: space.longitude,
-      wifi: space.wifi}
+      wifi: space.wifi,
+      address: space.address,
+      website: space.website,
+      avg_rating: space.avg_rating,
+      photo_attr: space.photo_attr}
   end
 end
