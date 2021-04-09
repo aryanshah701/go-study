@@ -1,4 +1,4 @@
-import { Row, Col, Card, Alert, Button } from "react-bootstrap";
+import { Row, Col, Card, Alert, Button, Badge } from "react-bootstrap";
 import { GoogleMap, Marker, InfoWindow } from "@react-google-maps/api";
 import { FiWifiOff } from "react-icons/fi";
 import { FiWifi } from "react-icons/fi";
@@ -6,33 +6,16 @@ import { FiWifi } from "react-icons/fi";
 import { useState, useEffect, useCallback, memo } from "react";
 import { NavLink, useHistory } from "react-router-dom";
 import { connect } from "react-redux";
+import { fetchPosition } from "../api";
 
-function Feed({ spaces }) {
-  const [position, setPosition] = useState(null);
-
-  // Function to set the user's location as state
-  function setLocation(position) {
-    const coords = position.coords;
-    setPosition({
-      lat: coords.latitude,
-      lng: coords.longitude,
-    });
-  }
-
-  // Function to handle the user denying location access
-  function handleError(err) {
-    // Set the Position to null to indicate an err
-    setPosition(null);
-  }
-
-  // Get the user's geolocation on component load
+function Feed({ spaces, position }) {
+  // If the position isn't in the store, fetch it
   useEffect(() => {
-    if ("geolocation" in navigator) {
-      navigator.geolocation.getCurrentPosition(setLocation, handleError, {
-        timeout: 10000,
-      });
+    if (!position) {
+      console.log("No position");
+      fetchPosition();
     }
-  }, []);
+  }, [position]);
 
   if (!position) {
     return (
@@ -158,14 +141,11 @@ function SpaceCard({ space, idx }) {
   let websiteLink = null;
   if (space.website !== "") {
     websiteLink = (
-      <Button
-        className="mr-2"
-        variant="primary"
-        target="_blank"
-        href={space.website}
-      >
-        Website
-      </Button>
+      <Badge className="mr-2 badge-link" variant="primary" target="_blank">
+        <a className="web-link" href={space.website}>
+          Website
+        </a>
+      </Badge>
     );
   }
 
@@ -188,8 +168,13 @@ function SpaceCard({ space, idx }) {
           <Card.Text>Location: {space.address}</Card.Text>
         </Card.Body>
         <Card.Footer className="text-muted">
-          <Button className="mr-2">{wifiIcon}</Button>
+          <Badge variant="primary" className="mr-2">
+            {wifiIcon}
+          </Badge>
           {websiteLink}
+          <Badge variant="primary" className="mr-2">
+            {space.avg_rating !== 0 ? space.avg_rating : "NA"}
+          </Badge>
         </Card.Footer>
       </Card>
     </Col>
@@ -197,10 +182,11 @@ function SpaceCard({ space, idx }) {
 }
 
 function stateToProps(state) {
-  const { spaces } = state;
+  const { spaces, position } = state;
 
   return {
     spaces: spaces,
+    position: position,
   };
 }
 

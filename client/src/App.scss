@@ -31,6 +31,14 @@ $highlight-color: #5b54da;
   border-color: $highlight-color !important;
 }
 
+.web-link {
+  color: white;
+}
+
+.badge-link:hover {
+  opacity: 95%;
+}
+
 body {
   font-family: "IBM Plex Sans", sans-serif;
 }

@@ -356,7 +356,7 @@ export async function fetchRecommendation(position) {
     "/recommendations?" +
     new URLSearchParams({
       lat: position.lat,
-      lng: position.long,
+      lng: position.lng,
     });
 
   const response = await getRequest(uri, token);
@@ -423,4 +423,42 @@ export async function fetchSpacesData() {
   store.dispatch(errAction);
 
   return false;
+}
+
+// Function to set the user's location as state
+function setLocation(geoPosition) {
+  const coords = geoPosition.coords;
+
+  const position = {
+    lat: coords.latitude,
+    lng: coords.longitude,
+  };
+
+  // Dispatch the position
+  const action = {
+    type: "position/set",
+    data: position,
+  };
+
+  store.dispatch(action);
+}
+
+// Function to handle the user denying location access
+function handleError(err) {
+  // Dispatch an error
+  const errAction = {
+    type: "err/set",
+    data:
+      "Seems like location is disabled. Try enabling it and revisiting the website.",
+  };
+
+  store.dispatch(errAction);
+}
+
+export function fetchPosition() {
+  if ("geolocation" in navigator) {
+    navigator.geolocation.getCurrentPosition(setLocation, handleError, {
+      timeout: 10000,
+    });
+  }
 }

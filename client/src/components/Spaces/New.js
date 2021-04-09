@@ -8,9 +8,11 @@ import {
   fetchRecommendation,
   fetchSpace,
   fetchSpacesData,
+  fetchPosition,
 } from "../../api";
 import store from "../../store";
 import { useHistory } from "react-router-dom";
+import { connect } from "react-redux";
 
 // Search radius in miles
 const RADIUS = 10;
@@ -19,9 +21,7 @@ const RADIUS = 10;
 const google = window.google;
 
 // Create a new space page
-function NewSpace() {
-  const [position, setPosition] = useState(null);
-
+function NewSpace({ position }) {
   // State for the recommended spaces
   const [recommendations, setRecommendations] = useState(null);
 
@@ -40,29 +40,13 @@ function NewSpace() {
   // State for whether the form has been submitted
   const [submitted, setSubmitted] = useState(false);
 
-  // Function to set the user's location as state
-  function setLocation(position) {
-    const coords = position.coords;
-    setPosition({
-      lat: coords.latitude,
-      long: coords.longitude,
-    });
-  }
-
-  // Function to handle the user denying location access
-  function handleError(err) {
-    // Set the Position to null to indicate an err
-    setPosition(null);
-  }
-
   // Get the user's geolocation on component load
   useEffect(() => {
-    if ("geolocation" in navigator) {
-      navigator.geolocation.getCurrentPosition(setLocation, handleError, {
-        timeout: 10000,
-      });
+    if (!position) {
+      console.log("No position");
+      fetchPosition();
     }
-  }, []);
+  }, [position]);
 
   // Get the recommended places once the geolocation is obtained
   useEffect(() => {
@@ -484,4 +468,4 @@ function stateToProps(state) {
   return { position: position };
 }
 
-export default NewSpace;
+export default connect(stateToProps)(NewSpace);
