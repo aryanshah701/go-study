@@ -400,3 +400,27 @@ export async function fetchSpace(id) {
 
   return null;
 }
+
+export async function fetchSpacesData() {
+  // Make the get request and dispatch the data if successful
+  const response = await getRequest("/spaces/");
+
+  if (response.data) {
+    const action = {
+      type: "spaces/set",
+      data: response.data,
+    };
+
+    store.dispatch(action);
+    return true;
+  }
+
+  const errAction = {
+    type: "error/set",
+    action: "Something went wrong with fetching all the Spaces",
+  };
+
+  store.dispatch(errAction);
+
+  return false;
+}

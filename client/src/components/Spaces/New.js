@@ -3,7 +3,12 @@ import Fade from "react-bootstrap/Fade";
 import GooglePlacesAutocomplete from "react-google-places-autocomplete";
 
 import { useState, useEffect } from "react";
-import { apiCreateSpace, fetchRecommendation, fetchSpace } from "../../api";
+import {
+  apiCreateSpace,
+  fetchRecommendation,
+  fetchSpace,
+  fetchSpacesData,
+} from "../../api";
 import store from "../../store";
 import { useHistory } from "react-router-dom";
 
@@ -15,7 +20,6 @@ const google = window.google;
 
 // Create a new space page
 function NewSpace() {
-  // State for the position
   const [position, setPosition] = useState(null);
 
   // State for the recommended spaces
@@ -58,11 +62,6 @@ function NewSpace() {
         timeout: 10000,
       });
     }
-
-    // Cleanup
-    return () => {
-      setPosition(null);
-    };
   }, []);
 
   // Get the recommended places once the geolocation is obtained
@@ -88,13 +87,6 @@ function NewSpace() {
 
   // Handle the case in which geolocation isn't enabled
   if (!position) {
-    // Dispatch loading alert
-    store.dispatch({
-      type: "info/set",
-      data:
-        "Locating Spaces nearby you. If you have location disabled, try enabling it and come back to this page",
-    });
-
     return (
       <Row className="my-5">
         <Col>
@@ -122,13 +114,6 @@ function NewSpace() {
         <Row>
           <Col>
             <h1>Create a New Space</h1>
-          </Col>
-        </Row>
-        <Row>
-          <Col>
-            <p>
-              Latitude: {position.lat}, Longitude: {position.long}
-            </p>
           </Col>
         </Row>
         <Recommendations
@@ -248,7 +233,7 @@ function Recommendations(props) {
       <Col>
         <Row>
           <Col>
-            <h4>Recommended Spaces Near You</h4>
+            <h4>Trying to add any of these?</h4>
           </Col>
         </Row>
         <Fade in={true}>
@@ -312,6 +297,7 @@ function SearchForm(props) {
             fetchSpace(space.id).then((space) => {
               if (space) {
                 // Navigate to the space's page
+                fetchSpacesData();
                 history.push("/spaces/" + space.id);
               }
             });
@@ -416,9 +402,8 @@ function SearchForm(props) {
             <h4>Manually Search for a Space</h4>
           </Col>
         </Row>
-        <Form>
+        <Form className="my-2">
           <Form.Group>
-            <Form.Label>Search for the space you wish to add</Form.Label>
             <Row>
               <Col>
                 <GooglePlacesAutocomplete
@@ -492,6 +477,11 @@ function isUserInputValid(userInput) {
 // Ensures that the space object has all required fields after a getDetails call
 function spaceObjectHasRequiredFields(space) {
   return space && space.name;
+}
+
+function stateToProps(state) {
+  const { position } = state;
+  return { position: position };
 }
 
 export default NewSpace;

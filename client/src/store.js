@@ -86,6 +86,15 @@ function showSpaces(state = [], action) {
   }
 }
 
+function spaces(state = null, action) {
+  switch (action.type) {
+    case "spaces/set":
+      return action.data;
+    default:
+      return state;
+  }
+}
+
 // Replace a space within the given state with the new space
 function replaceEvent(state, newSpace) {
   // Clone the state to prevent mutating
@@ -136,6 +145,7 @@ function rootReducer(state, action) {
     session,
     user,
     showSpaces,
+    spaces,
     error,
     success,
     info,

@@ -30,7 +30,12 @@ function NavBar(props) {
         <Row>
           <Col>
             <Navbar bg="light" as="ul">
-              <NavLink to="/" className="nav-link mx-2 mr-auto p-0" exact>
+              <NavLink
+                id="brand"
+                to="/"
+                className="nav-link mx-2 mr-auto p-0"
+                exact
+              >
                 GoStudy
               </NavLink>
               <NavInfo />

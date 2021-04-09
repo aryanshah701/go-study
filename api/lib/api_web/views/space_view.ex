@@ -39,6 +39,8 @@ defmodule ApiWeb.SpaceView do
       description: space.description,
       latitude: space.latitude,
       longitude: space.longitude,
-      wifi: space.wifi}
+      wifi: space.wifi,
+      address: space.address,
+      website: space.website}
   end
 end
