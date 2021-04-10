@@ -59,8 +59,8 @@ function RegisterForm() {
 
   function checkPassword(password, confirmPassword) {
     if (password.length < 8) {
-      return "Password must be at least 8 characters"
-    }  else if (password !== confirmPassword) {
+      return "Password must be at least 8 characters";
+    } else if (password !== confirmPassword) {
       return "The passwords do not match!";
     } else {
       return "";
@@ -94,7 +94,7 @@ function RegisterForm() {
               const successDataFetch = fetchUserData();
 
               if (successDataFetch) {
-                history.push("/");
+                history.push("/feed");
               } else {
                 history.push("/login");
               }

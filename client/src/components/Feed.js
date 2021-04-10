@@ -125,15 +125,6 @@ function SpaceCards({ spaces }) {
 
 function SpaceCard({ space, idx }) {
   let websiteLink = null;
-  if (space.website !== "") {
-    websiteLink = (
-      <Badge className="mr-2 badge-link" variant="primary" target="_blank">
-        <a className="web-link" href={space.website}>
-          Website
-        </a>
-      </Badge>
-    );
-  }
 
   let wifiIcon;
   if (space.wifi) {

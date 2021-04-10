@@ -3,8 +3,8 @@ import store from "./store";
 
 const socketUrl =
   process.env.NODE_ENV === "production"
-    ? "ws://gostudy-api.aryanshah.tech/socket/"
-    : "ws://localhost:4000/socket/";
+    ? "wss://gostudy-api.aryanshah.tech/socket/"
+    : "wss://localhost:4000/socket/";
 
 const state = store.getState();
 const session = state.session;

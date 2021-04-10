@@ -17,10 +17,10 @@ body {
   max-height: 400px;
 }
 
-.light {
-  opacity: 85% !important;
-  transition: background-color 0.7s ease;
-}
+// .light {
+//   opacity: 85% !important;
+//   transition: background-color 0.7s ease;
+// }
 
 .navbar {
   padding: 0;
@@ -64,3 +64,5 @@ body {
 .highlight-paragraph {
   font-size: 1.5rem;
 }
+
+// @import "~bootstrap/scss/bootstrap";
