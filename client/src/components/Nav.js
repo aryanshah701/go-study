@@ -7,7 +7,7 @@ import { fetchUserData } from "../api";
 
 // Navbar component
 function NavBar(props) {
-  const { success, error } = props;
+  const { success, error, info } = props;
 
   // Alerts
   let successAlert = null;
@@ -18,6 +18,10 @@ function NavBar(props) {
 
   if (error) {
     errorAlert = <Alert variant="danger">{error}</Alert>;
+  }
+
+  if (info) {
+    errorAlert = <Alert variant="info">{info}</Alert>;
   }
 
   return (
@@ -137,8 +141,8 @@ function stateToProps(state) {
 }
 
 function navStateToProps(state) {
-  const { success, error } = state;
-  return { success: success, error: error };
+  const { success, error, info } = state;
+  return { success: success, error: error, info: info };
 }
 
 export default connect(navStateToProps)(NavBar);

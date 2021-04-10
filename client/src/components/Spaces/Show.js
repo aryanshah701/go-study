@@ -10,11 +10,11 @@ import {
   InputGroup,
   FormControl,
   ListGroup,
+  Alert,
 } from "react-bootstrap";
 import StarRatings from "react-star-ratings";
 import { FiWifiOff } from "react-icons/fi";
 import { FiWifi } from "react-icons/fi";
-import googleAttr from "../../powered_by_google_on_white.png";
 
 import store from "../../store";
 import { useParams, useHistory } from "react-router-dom";
@@ -41,6 +41,7 @@ function ShowSpace(props) {
   const [liveState, setLiveState] = useState(null);
 
   // Join the Space's channel on page load, if the user is signed in
+  let infoAlert = null;
   useEffect(() => {
     if (session) {
       // Join the channel
@@ -96,9 +97,25 @@ function ShowSpace(props) {
     }
   }
 
+  if (!session) {
+    infoAlert = (
+      <Alert variant="info">
+        Login to leave comments and reviews and receive them live!
+      </Alert>
+    );
+  }
+
   return (
     <Row className="my-5">
-      <Col>{spaceInfo}</Col>
+      <Col>
+        <Row>
+          <Col>{infoAlert}</Col>
+        </Row>
+
+        <Row>
+          <Col>{spaceInfo}</Col>
+        </Row>
+      </Col>
     </Row>
   );
 }
@@ -119,7 +136,9 @@ function SpaceInfo({ space, session, history, liveState }) {
     image = (
       <div>
         <Image className="image my-1" src={space.photo} alt="..." fluid />
-        Attribution: <span dangerouslySetInnerHTML={{ __html: attr }}></span>
+        <p>
+          Attribution: <span dangerouslySetInnerHTML={{ __html: attr }}></span>
+        </p>
       </div>
     );
   }

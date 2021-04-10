@@ -127,9 +127,9 @@ function error(state = "", action) {
 }
 
 // Info flash reducer
-function info(stat = "", action) {
+function info(state = "", action) {
   switch (action.type) {
-    case "error/set":
+    case "info/set":
       return action.data;
     default:
       return null;
