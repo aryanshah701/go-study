@@ -161,7 +161,7 @@ function SpaceDescription({ space }) {
     </Popover>
   );
 
-  const spaceUrl = "https://go-study.aryanshah.tech/spaces/" + space.id;
+  const spaceUrl = "https://gostudy.aryanshah.tech/spaces/" + space.id;
 
   let wifiIcon;
   if (space.wifi) {
