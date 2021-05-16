@@ -10,9 +10,15 @@ use Mix.Config
 # which you should run after static files are built and
 # before starting your production server.
 config :api, ApiWeb.Endpoint,
-  url: [host: "https://gostudy-api.aryanshah.tech", port: 80],
+  http: [:inet6, port: System.get_env("PORT")]
+  url: [host: System.get_env("WEB_HOST"), port: 80],
   cache_static_manifest: "priv/static/cache_manifest.json",
   check_origin: ["https://gostudy.aryanshah.tech"]
+
+config :api, ApiWeb.Repo,
+   adapter: Ecto.Adapters.Postgres,
+   url: System.get_env("DATABASE_URL"),
+   pool_size: 20
 
 # Do not print debug messages in production
 config :logger, level: :info
