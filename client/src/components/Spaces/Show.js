@@ -54,7 +54,7 @@ function ShowSpace(props) {
         channelLeave();
       }
     };
-  }, []);
+  }, [id, liveState, session]);
 
   // Handle errors from channel
   useEffect(() => {

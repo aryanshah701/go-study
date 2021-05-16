@@ -70,7 +70,7 @@ function Map({ position, spaces }) {
     lng: position.lng,
   };
 
-  const [map, setMap] = useState(null);
+  const [, setMap] = useState(null);
   const history = useHistory();
 
   const onUnmount = useCallback(function callback(map) {

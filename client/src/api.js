@@ -460,11 +460,5 @@ export async function fetchUserData() {
     return true;
   }
 
-  // Dispatch an unautherised error
-  const errAction = {
-    type: "error/set",
-    data: "Something went wrong",
-  };
-
   return false;
 }
