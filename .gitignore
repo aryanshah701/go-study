@@ -1,3 +1,4 @@
 route.rest
 .vscode/*
 .vscode
+.DS_Store
